@@ -1,0 +1,10 @@
+{
+    "name": "ze-kaiser",
+    "version": "1.0.0",
+    "description": "A Discord Bot for the BYU CS Server.",
+    "main": "kaiser.js",
+    "author": "Taylor Whitlock",
+    "dependencies": {
+        "discord.js": "11.5.1"
+    }
+}
