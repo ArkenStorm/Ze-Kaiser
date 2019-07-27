@@ -34,8 +34,10 @@ const processCommand = (receivedMessage) => {
 			misc.bamboozled(receivedMessage);
 			break;
 		case 'addrole':
-		case 'addRole':
 			base.addRole(receivedMessage, args);
+			break;
+		case 'removerole':
+			base.removeRole(receivedMessage, args);
 			break;
 		default:
 			receivedMessage.channel.send('Invalid command.');
