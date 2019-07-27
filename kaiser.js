@@ -36,6 +36,9 @@ const processCommand = (receivedMessage) => {
 		case 'addrole':
 			base.addRole(receivedMessage, args);
 			break;
+		case 'removerole':
+			base.removeRole(receivedMessage, args);
+			break;
 		default:
 			receivedMessage.channel.send('Invalid command.');
 	}
