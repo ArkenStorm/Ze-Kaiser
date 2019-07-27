@@ -13,6 +13,15 @@ const cooldudes = (receivedMessage) => {
     });
 }
 
+const bamboozled = (receivedMessage) => {
+	receivedMessage.channel.send({
+		files: [
+			'./misc-files/bamboozled.jpg'
+		]
+	})
+}
+
 module.exports = {
-    cooldudes
+	cooldudes,
+	bamboozled
 };
