@@ -34,7 +34,6 @@ const processCommand = (receivedMessage) => {
 			misc.bamboozled(receivedMessage);
 			break;
 		case 'addrole':
-		case 'addRole':
 			base.addRole(receivedMessage, args);
 			break;
 		default:
