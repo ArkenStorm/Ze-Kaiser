@@ -5,17 +5,17 @@ const addRole = (receivedMessage, role) => {
     }
     role = role.join(' ');  //For roles with multiple words
 
-    const teRole = receivedMessage.guild.roles.find(teRole => teRole.name === role);
+    const zeRole = receivedMessage.guild.roles.find(zeRole => zeRole.name === role);
 
-    if(!teRole) {
+    if(!zeRole) {
         receivedMessage.channel.send(`${receivedMessage.author}, the ${role} role doesn't seem to exist.  Make sure you spelled it right.  I am case-sensitive, so make sure the casing matches, too.`);
         return;
     }
 
-    if (receivedMessage.member.roles.has(teRole.id)) {
+    if (receivedMessage.member.roles.has(zeRole.id)) {
         receivedMessage.channel.send(`${receivedMessage.author}, you already have the "${role}" role!`);
     } else {
-        receivedMessage.member.addRole(teRole).then(() => {
+        receivedMessage.member.addRole(zeRole).then(() => {
             receivedMessage.channel.send(`${receivedMessage.author}, you have been given the "${role}" role.`).catch((err) => {
                 client.fetchUser('400191346742263818').then((user) => { //Zealot's ID
                     user.send(`I borked.  Message: ${receivedMessage.content} \n Error: ${err}`);
@@ -37,15 +37,15 @@ const removeRole = (receivedMessage, role) => {
     }
     role = role.join(' ');  //For roles with multiple words
 
-    const teRole = receivedMessage.guild.roles.find(teRole => teRole.name === role);
+    const zeRole = receivedMessage.guild.roles.find(zeRole => zeRole.name === role);
 
-    if(!teRole) {
+    if(!zeRole) {
         receivedMessage.channel.send(`${receivedMessage.author}, the ${role} role doesn't seem to exist.  Make sure you spelled it right.  I am case-sensitive, so make sure the casing matches, too.`);
         return;
     }
 
-    if (receivedMessage.member.roles.has(teRole.id)) {
-        receivedMessage.member.removeRole(teRole).then(() => {
+    if (receivedMessage.member.roles.has(zeRole.id)) {
+        receivedMessage.member.removeRole(zeRole).then(() => {
             receivedMessage.channel.send(`${receivedMessage.author}, I've removed the "${role}" role from you.`).catch((err) => {
                 client.fetchUser('400191346742263818').then((user) => { //Zealot's ID
                     user.send(`I borked.  Message: ${receivedMessage.content} \n Error: ${err}`);
