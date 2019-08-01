@@ -51,7 +51,7 @@ const addRoles = (receivedMessage, roles) => {
         if (role && !receivedMessage.member.roles.has(role.id)) {
             zeRoles.push(role);
         } else if (!role) {
-            receivedMessage.channel.send(`The ${roles[i]} role is doesn't seem to exist.  Make sure the spelling and casing are both correct.`);
+            receivedMessage.channel.send(`The ${roles[i]} role doesn't seem to exist.  Make sure the spelling and casing are both correct.`);
         } else {
             receivedMessage.channel.send(`${receivedMessage.author}, you already have the "${roles[i]}" role!`)
         }
