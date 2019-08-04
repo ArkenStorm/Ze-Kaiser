@@ -36,6 +36,41 @@ const addRole = (receivedMessage, role) => {
 	}
 }
 
+const addRoles = (receivedMessage, roles) => {
+    if (!roles.length) {
+		receivedMessage.channel.send('I need some roles to try to add!');
+		return;
+	}
+    roles = roles.join(' ');  //For roles with multiple words
+    roles = roles.split(', ');
+
+    const zeRoles = [];
+
+    for (let i = 0; i < roles.length; ++i) {
+		const role = receivedMessage.guild.roles.find(zeRole => zeRole.name === roles[i]);
+
+		let botHighestRole = receivedMessage.guild.me.highestRole;
+		if (botHighestRole.comparePositionTo(role) <= 0) {
+			receivedMessage.channel.send(`I'm sorry ${receivedMessage.author}, I'm afraid I can't do that.\n(${roles[i]})`);
+		} else if (role && !receivedMessage.member.roles.has(role.id)) {
+            zeRoles.push(role);
+        } else if (!role) {
+            receivedMessage.channel.send(`The ${roles[i]} role doesn't seem to exist.  Make sure the spelling and casing are both correct.`);
+        } else {
+            receivedMessage.channel.send(`${receivedMessage.author}, you already have the "${roles[i]}" role!`)
+        }
+    }
+    receivedMessage.member.addRoles(zeRoles).then(() => {
+		const addedRoles = [];	//This is to keep the bot from pinging everyone with the roles it added
+		for (let i = 0; i < zeRoles.length; ++i) {
+			addedRoles.push(zeRoles[i].name);
+		}
+        receivedMessage.channel.send(`${receivedMessage.author}, the following roles have been added: ${addedRoles.join(', ')}`);
+    }).catch((err) => {
+        receivedMessage.channel.send('There was an error adding the roles.');
+    });
+}
+
 const removeRole = (receivedMessage, role) => {
 	if (!role.length) {
 		receivedMessage.channel.send('I need a role to try to remove!');
@@ -69,6 +104,7 @@ const removeRole = (receivedMessage, role) => {
 }
 
 module.exports = {
-	addRole,
+    addRole,
+    addRoles,
 	removeRole
 };
