@@ -50,7 +50,7 @@ const addRoles = (receivedMessage, roles) => {
 		const role = receivedMessage.guild.roles.find(zeRole => zeRole.name === roles[i]);
 
 		let botHighestRole = receivedMessage.guild.me.highestRole;
-		if (botHighestRole.comparePositionTo(role) <= 0) {
+		if (role && botHighestRole.comparePositionTo(role) <= 0) {
 			receivedMessage.channel.send(`I'm sorry ${receivedMessage.author}, I'm afraid I can't do that.\n(${roles[i]})`);
 		} else if (role && !receivedMessage.member.roles.has(role.id)) {
             zeRoles.push(role);
@@ -103,8 +103,44 @@ const removeRole = (receivedMessage, role) => {
 	}
 }
 
+const removeRoles = (receivedMessage, roles) => {
+    if (!roles.length) {
+		receivedMessage.channel.send('I need some roles to try to remove!');
+		return;
+	}
+    roles = roles.join(' ');  //For roles with multiple words
+    roles = roles.split(', ');
+
+    const zeRoles = [];
+
+    for (let i = 0; i < roles.length; ++i) {
+		const role = receivedMessage.guild.roles.find(zeRole => zeRole.name === roles[i]);
+
+		let botHighestRole = receivedMessage.guild.me.highestRole;
+		if (role && botHighestRole.comparePositionTo(role) <= 0) {
+			receivedMessage.channel.send(`I'm sorry ${receivedMessage.author}, I'm afraid I can't do that.\n(${roles[i]})`);
+		} else if (role && receivedMessage.member.roles.has(role.id)) {
+            zeRoles.push(role);
+        } else if (!role) {
+            receivedMessage.channel.send(`The ${roles[i]} role doesn't seem to exist.  Make sure the spelling and casing are both correct.`);
+        } else {
+            receivedMessage.channel.send(`${receivedMessage.author}, you don't have the "${roles[i]}" role!`)
+        }
+    }
+    receivedMessage.member.removeRoles(zeRoles).then(() => {
+		const removedRoles = [];	//This is to keep the bot from pinging everyone with the roles it added
+		for (let i = 0; i < zeRoles.length; ++i) {
+			removedRoles.push(zeRoles[i].name);
+		}
+        receivedMessage.channel.send(`${receivedMessage.author}, the following roles have been removed: ${removedRoles.join(', ')}`);
+    }).catch((err) => {
+        receivedMessage.channel.send('There was an error removing the roles.');
+    });
+}
+
 module.exports = {
     addRole,
     addRoles,
-	removeRole
+	removeRole,
+	removeRoles
 };
