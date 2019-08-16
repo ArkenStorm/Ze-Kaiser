@@ -9,6 +9,7 @@ const cooldudes = (receivedMessage) => {
             user.send(`I borked.  Message: ${receivedMessage.content} \n Error: ${err}`);
         })
     });
+    receivedMessage.delete();
 }
 
 const bamboozled = (receivedMessage) => {
@@ -22,6 +23,7 @@ const bamboozled = (receivedMessage) => {
             user.send(`I borked.  Message: ${receivedMessage.content} \n Error: ${err}`);
         });
     });
+    receivedMessage.delete();
 }
 
 const illegal = (receivedMessage) => {
@@ -35,6 +37,7 @@ const illegal = (receivedMessage) => {
             user.send(`I borked.  Message: ${receivedMessage.content} \n Error: ${err}`);
         });
     });
+    receivedMessage.delete();
 }
 
 const autoReact = (messageReaction) => {
