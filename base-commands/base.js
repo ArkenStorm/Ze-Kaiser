@@ -138,9 +138,37 @@ const removeRoles = (receivedMessage, roles) => {
     });
 }
 
+const info = (receivedMessage, channel) => {
+	if (!channel) {
+		receivedMessage.channel.send('I can\'t give any information about nothing!');
+		return;
+	}
+
+	channel = channel.join(' '); // necessary? will channel names have to be bot-spam? most things are just one word though...
+	const zeChannel = receivedMessage.guild.channels.find(zeChannel => zeChannel.name === channel );
+	if (!zeChannel) {
+		receivedMessage.channel.send('Channel not found. You must type the channel name exactly as it appears in the list.');
+		return;
+	}
+	if (zeChannel.type == 'text') {
+		receivedMessage.channel.send(`${zeChannel.name}: ${zeChannel.topic}`).catch((err) => {
+			client.fetchUser('400191346742263818').then((user) => { //Zealot's ID
+				user.send(`I borked.  Message: ${receivedMessage.content} \n Error: ${err}`);
+			});
+			client.fetchUser('358333674514677760').then((user) => { //Arken's ID
+				user.send(`I borked.  Message: ${receivedMessage.content} \n Error: ${err}`);
+			});
+		});
+	}
+	else {
+		receivedMessage.channel.send('Invalid channel type.');
+	}
+}
+
 module.exports = {
     addRole,
     addRoles,
 	removeRole,
-	removeRoles
+	removeRoles,
+	info
 };

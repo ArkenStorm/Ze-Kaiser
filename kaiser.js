@@ -19,6 +19,13 @@ client.on('message', (receivedMessage) => {
 	}
 });
 
+client.on('messageReactionAdd', (messageReaction) => {
+	if (messageReaction.message.author === client.user) {
+		return;
+	}
+	misc.autoReact(messageReaction);
+});
+
 const processCommand = (receivedMessage) => {
 	let fullCommand = receivedMessage.content.substr(1) // Remove the leading character
 	let splitCommand = fullCommand.split(" ") // Split the message up in to pieces for each space
@@ -33,6 +40,9 @@ const processCommand = (receivedMessage) => {
 		case 'bamboozled':
 			misc.bamboozled(receivedMessage);
 			break;
+		case 'illegal':
+			misc.illegal(receivedMessage);
+			break;
 		case 'addrole':
 			base.addRole(receivedMessage, args);
 			break;
@@ -44,6 +54,9 @@ const processCommand = (receivedMessage) => {
 			break;
 		case 'removeroles':
 			base.removeRoles(receivedMessage, args);
+			break;
+		case 'info':
+			base.info(receivedMessage, args);
 			break;
 		default:
 			receivedMessage.channel.send('Invalid command.');
