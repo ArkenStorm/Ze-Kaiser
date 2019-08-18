@@ -1,0 +1,26 @@
+{
+	"info": {
+		"title": "!info <channel>",
+		"description": "Provides information on a specific channel."
+	},
+	"help": {
+		"title": "!help",
+		"description": "Provides a list of commands, should you ever forget. Not all commands will be listed, there have to be some secrets!"
+	},
+	"addrole": {
+		"title": "!addrole <role>",
+		"description": "Adds the specific class or completed class role."
+	},
+	"addroles": {
+		"title": "!addroles <role1>, <role2>, ...<roleN>",
+		"description": "Adds multiple roles."
+	},
+	"removerole": {
+		"title": "!removerole <role>",
+		"description": "Removes a role."
+	},
+	"removeroles": {
+		"title": "!removeroles <role1>, <role2>, …<roleN>",
+		"description": "Removes multiple roles."
+	}
+}

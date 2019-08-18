@@ -23,12 +23,7 @@ const addRole = (receivedMessage, role) => {
 	} else {
 		receivedMessage.member.addRole(zeRole).then(() => {
 			receivedMessage.channel.send(`${receivedMessage.author}, you have been given the "${role}" role.`).catch((err) => {
-				client.fetchUser('400191346742263818').then((user) => { //Zealot's ID
-					user.send(`I borked.  Message: ${receivedMessage.content} \n Error: ${err}`);
-				});
-				client.fetchUser('358333674514677760').then((user) => { //Arken's ID
-					user.send(`I borked.  Message: ${receivedMessage.content} \n Error: ${err}`);
-				});
+				sendError(receivedMessage, err);
 			});
 		}).catch((err) => {
 			receivedMessage.channel.send('Failed to add the role.');
@@ -88,12 +83,7 @@ const removeRole = (receivedMessage, role) => {
 	if (receivedMessage.member.roles.has(zeRole.id)) {
 		receivedMessage.member.removeRole(zeRole).then(() => {
 			receivedMessage.channel.send(`${receivedMessage.author}, I've removed the "${role}" role from you.`).catch((err) => {
-				client.fetchUser('400191346742263818').then((user) => { //Zealot's ID
-					user.send(`I borked.  Message: ${receivedMessage.content} \n Error: ${err}`);
-				});
-				client.fetchUser('358333674514677760').then((user) => { //Arken's ID
-					user.send(`I borked.  Message: ${receivedMessage.content} \n Error: ${err}`);
-				});
+				sendError(receivedMessage, err);
 			});
 		}).catch((err) => {
 			receivedMessage.channel.send('Failed to remove the role.');
@@ -140,24 +130,18 @@ const removeRoles = (receivedMessage, roles) => {
 
 const info = (receivedMessage, channel) => {
 	if (!channel) {
-		receivedMessage.channel.send('I can\'t give any information about nothing!');
+		receivedMessage.channel.send('I can\'t give information about nothing!');
 		return;
 	}
 
-	channel = channel.join(' '); // necessary? will channel names have to be bot-spam? most things are just one word though...
 	const zeChannel = receivedMessage.guild.channels.find(zeChannel => zeChannel.name === channel );
 	if (!zeChannel) {
-		receivedMessage.channel.send('Channel not found. You must type the channel name exactly as it appears in the list.');
+		receivedMessage.channel.send('Channel not found. You must type the channel name exactly as it appears in the list, including dashes.');
 		return;
 	}
 	if (zeChannel.type == 'text') {
 		receivedMessage.channel.send(`${zeChannel.name}: ${zeChannel.topic}`).catch((err) => {
-			client.fetchUser('400191346742263818').then((user) => { //Zealot's ID
-				user.send(`I borked.  Message: ${receivedMessage.content} \n Error: ${err}`);
-			});
-			client.fetchUser('358333674514677760').then((user) => { //Arken's ID
-				user.send(`I borked.  Message: ${receivedMessage.content} \n Error: ${err}`);
-			});
+			sendError(receivedMessage, err);
 		});
 	}
 	else {
@@ -165,10 +149,32 @@ const info = (receivedMessage, channel) => {
 	}
 }
 
+const help = (receivedMessage) => {
+	let allCommands = require('./help.json');
+
+	const helpEmbed = new Discord.RichEmbed().setColor('#2295d4');
+	Object.keys(allCommands).forEach(command => {
+		const currentCommand = allCommands[command];
+		helpEmbed.addField(currentCommand.title, currentCommand.description);
+	});
+	receivedMessage.channel.send(helpEmbed);
+}
+
+const sendError = (receivedMessage, err) => {
+	client.fetchUser('400191346742263818').then((user) => { //Zealot's ID
+		user.send(`I borked.  Message: ${receivedMessage.content} \n Error: ${err}`);
+	});
+	client.fetchUser('358333674514677760').then((user) => { //Arken's ID
+		user.send(`I borked.  Message: ${receivedMessage.content} \n Error: ${err}`);
+	});
+}
+
 module.exports = {
     addRole,
     addRoles,
 	removeRole,
 	removeRoles,
-	info
+	info,
+	help,
+	sendError
 };

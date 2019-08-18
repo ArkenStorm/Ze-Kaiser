@@ -1,4 +1,4 @@
-const Discord = require('discord.js');
+global.Discord = require('discord.js');
 global.client = new Discord.Client();
 const security = require('./auth.json');
 
@@ -16,6 +16,13 @@ client.on('message', (receivedMessage) => {
 
 	if (receivedMessage.content.startsWith('!')) {
 		processCommand(receivedMessage);
+	}
+
+	if (receivedMessage.isMentioned(client.user)) {
+		const why = client.emojis.get('612697675996856362');
+		if (why) {
+			receivedMessage.react(why);
+		}
 	}
 });
 
@@ -57,6 +64,9 @@ const processCommand = (receivedMessage) => {
 			break;
 		case 'info':
 			base.info(receivedMessage, args);
+			break;
+		case 'help':
+			base.help(receivedMessage);
 			break;
 		default:
 			receivedMessage.channel.send('Invalid command.');
