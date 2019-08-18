@@ -133,6 +133,7 @@ const info = (receivedMessage, channel) => {
 		receivedMessage.channel.send('I can\'t give information about nothing!');
 		return;
 	}
+	channel = channel.join();
 
 	const zeChannel = receivedMessage.guild.channels.find(zeChannel => zeChannel.name === channel );
 	if (!zeChannel) {
