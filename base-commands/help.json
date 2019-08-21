@@ -7,6 +7,10 @@
 		"title": "!help",
 		"description": "Provides a list of commands, should you ever forget. Not all commands will be listed, there have to be some secrets!"
 	},
+	"roles": {
+		"title": "!roles",
+		"description": "Lists all the roles available to add/remove."
+	},
 	"addrole": {
 		"title": "!addrole <role>",
 		"description": "Adds the specific class or completed class role."

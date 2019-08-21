@@ -41,8 +41,14 @@ const autoReact = (messageReaction) => {
         return;
     }
     if (messageReaction.emoji.name === 'same' || messageReaction.emoji.name.toLowerCase() === 'no_u' || messageReaction.emoji.name.toLowerCase() === 'nou') {
-        const random = Math.round(Math.random() * 10);
-        if (random % 2 === 0) {
+        const random = Math.round(Math.random() * 100);
+        if (random % 5 === 0) {
+            messageReaction.message.react(messageReaction.emoji);
+        }
+    }
+    else {
+        const random = Math.round(Math.random() * 100);
+        if (random % 100 === 0) {
             messageReaction.message.react(messageReaction.emoji);
         }
     }

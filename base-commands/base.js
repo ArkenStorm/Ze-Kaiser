@@ -12,8 +12,13 @@ const addRole = (receivedMessage, role) => {
 		return;
 	}
 
+	if (role == '@everyone') {
+		receivedMessage.channel.send('Foolish mortal, you cannot add that role!');
+		return;
+	}
+
 	let botHighestRole = receivedMessage.guild.me.highestRole;
-	if (botHighestRole.comparePositionTo(zeRole) <= 0) {
+	if (botHighestRole.comparePositionTo(zeRole) <= 0 || role.name == '@everyone') {
 		receivedMessage.channel.send(`I'm sorry ${receivedMessage.author}, I'm afraid I can't do that.`);
 		return;
 	}
@@ -37,7 +42,11 @@ const addRoles = (receivedMessage, roles) => {
 		return;
 	}
     roles = roles.join(' ');  //For roles with multiple words
-    roles = roles.split(', ');
+	roles = roles.split(', ');
+	if (roles.includes('@everyone')) {
+		receivedMessage.channel.send('Foolish mortal, you cannot add the @everyone role! No roles were added because of your insolence!');
+		return;
+	}
 
     const zeRoles = [];
 
@@ -45,7 +54,7 @@ const addRoles = (receivedMessage, roles) => {
 		const role = receivedMessage.guild.roles.find(zeRole => zeRole.name === roles[i]);
 
 		let botHighestRole = receivedMessage.guild.me.highestRole;
-		if (role && botHighestRole.comparePositionTo(role) <= 0) {
+		if (role && botHighestRole.comparePositionTo(role) <= 0 || role.name == '@everyone') {
 			receivedMessage.channel.send(`I'm sorry ${receivedMessage.author}, I'm afraid I can't do that.\n(${roles[i]})`);
 		} else if (role && !receivedMessage.member.roles.has(role.id)) {
             zeRoles.push(role);
@@ -58,9 +67,16 @@ const addRoles = (receivedMessage, roles) => {
     receivedMessage.member.addRoles(zeRoles).then(() => {
 		const addedRoles = [];	//This is to keep the bot from pinging everyone with the roles it added
 		for (let i = 0; i < zeRoles.length; ++i) {
-			addedRoles.push(zeRoles[i].name);
+			if (receivedMessage.member.roles.has(zeRoles[i].id)) {
+				addedRoles.push(zeRoles[i].name);
+			}
 		}
-        receivedMessage.channel.send(`${receivedMessage.author}, the following roles have been added: ${addedRoles.join(', ')}`);
+		if (addedRoles.length) {
+			receivedMessage.channel.send(`${receivedMessage.author}, the following roles have been added: ${addedRoles.join(', ')}`);
+		}
+		else {
+			receivedMessage.channel.send(`${receivedMessage.author}, you either already have all of those roles or they don't exist!`);
+		}
     }).catch((err) => {
         receivedMessage.channel.send('There was an error adding the roles.');
     });
@@ -77,6 +93,11 @@ const removeRole = (receivedMessage, role) => {
 
 	if(!zeRole) {
 		receivedMessage.channel.send(`${receivedMessage.author}, the ${role} role doesn't seem to exist.  Make sure you spelled it right.  I am case-sensitive, so make sure the casing matches, too.`);
+		return;
+	}
+
+	if (role == '@everyone') {
+		receivedMessage.channel.send('Foolish mortal, you cannot remove that role!');
 		return;
 	}
 
@@ -99,7 +120,11 @@ const removeRoles = (receivedMessage, roles) => {
 		return;
 	}
     roles = roles.join(' ');  //For roles with multiple words
-    roles = roles.split(', ');
+	roles = roles.split(', ');
+	if (roles.includes('@everyone')) {
+		receivedMessage.channel.send('Foolish mortal, you cannot remove the @everyone role! No roles have been removed because of your insolence!');
+		return;
+	}
 
     const zeRoles = [];
 
@@ -161,6 +186,24 @@ const help = (receivedMessage) => {
 	receivedMessage.channel.send(helpEmbed);
 }
 
+const roles = (receivedMessage) => {
+	let botHighestRole = receivedMessage.guild.me.highestRole;
+	const roleEmbed = new Discord.RichEmbed().setColor('#2295d4');
+	const eligibleRoles = [];
+	receivedMessage.guild.roles.forEach(role => {
+		if (botHighestRole.comparePositionTo(role) > 0 && role.name != '@everyone' && role.editable && role.name.indexOf('complete') == -1) {
+			eligibleRoles.push(role.name);
+		}
+	});
+	eligibleRoles.sort();
+	roleEmbed.setTitle('Available Role(s):');
+	roleEmbed.setDescription(eligibleRoles.join(', '));
+	if (receivedMessage.guild.name == 'BYU CS') {
+		roleEmbed.setFooter('Remember, there is also a "complete" variant of every class role!');
+	}
+	receivedMessage.channel.send(roleEmbed);
+}
+
 const sendError = (receivedMessage, err) => {
 	client.fetchUser('400191346742263818').then((user) => { //Zealot's ID
 		user.send(`I borked.  Message: ${receivedMessage.content} \n Error: ${err}`);
@@ -177,5 +220,6 @@ module.exports = {
 	removeRoles,
 	info,
 	help,
+	roles,
 	sendError
 };

@@ -68,6 +68,9 @@ const processCommand = (receivedMessage) => {
 		case 'help':
 			base.help(receivedMessage);
 			break;
+		case 'roles':
+			base.roles(receivedMessage);
+			break;
 		default:
 			receivedMessage.channel.send('Invalid command.');
 	}
