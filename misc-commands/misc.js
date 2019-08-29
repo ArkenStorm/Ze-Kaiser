@@ -42,7 +42,7 @@ const autoReact = (messageReaction) => {
     }
     if (messageReaction.emoji.name === 'same' || messageReaction.emoji.name.toLowerCase() === 'no_u' || messageReaction.emoji.name.toLowerCase() === 'nou') {
         const random = Math.round(Math.random() * 100);
-        if (random % 5 === 0) {
+        if (random % 1 === 0) {
             messageReaction.message.react(messageReaction.emoji);
         }
     }
