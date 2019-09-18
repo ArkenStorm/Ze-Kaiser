@@ -4,6 +4,7 @@ const security = require('./auth.json');
 
 const misc = require('./misc-commands/misc');
 const base = require('./base-commands/base');
+const starboard = require('./misc-commands/starboard');
 
 client.on('ready', () => {
 	console.log('Connected as ' + client.user.tag);
@@ -26,12 +27,17 @@ client.on('message', (receivedMessage) => {
 	}
 });
 
-client.on('messageReactionAdd', (messageReaction) => {
+client.on('messageReactionAdd', (messageReaction, user) => {
 	if (messageReaction.message.author === client.user) {
 		return;
 	}
 	misc.autoReact(messageReaction);
+	starboard.add(messageReaction, user);
 });
+
+client.on('messageReactionRemove', (messageReaction, user) => {
+	starboard.subract(messageReaction, user);
+})
 
 const processCommand = (receivedMessage) => {
 	try {
