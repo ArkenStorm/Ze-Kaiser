@@ -11,7 +11,7 @@ client.on('ready', () => {
 });
 
 client.on('message', (receivedMessage) => {
-	if (receivedMessage.author === client.user) {   //Make sure the bot doesn't respond to itself, otherwise weird loopage may occur
+	if (receivedMessage.author === client.user || misc.smited.includes(receivedMessage.author)) {   //Make sure the bot doesn't respond to itself, otherwise weird loopage may occur
 		return;
 	}
 
@@ -28,7 +28,7 @@ client.on('message', (receivedMessage) => {
 });
 
 client.on('messageReactionAdd', (messageReaction, user) => {
-	if (messageReaction.message.author === client.user) {
+	if (messageReaction.message.author === client.user || misc.smited.includes(receivedMessage.author)) {
 		return;
 	}
 	misc.autoReact(messageReaction);
@@ -77,6 +77,16 @@ const processCommand = (receivedMessage) => {
 				break;
 			case 'roles':
 				base.roles(receivedMessage);
+				break;
+			case 'smite':
+				if (receivedMessage.author.id === '400191346742263818' || receivedMessage.author.id === '358333674514677760') {
+					misc.smite(receivedMessage);
+				}
+				break;
+			case 'unsmite':
+				if (receivedMessage.author.id === '400191346742263818' || receivedMessage.author.id === '358333674514677760') {
+					misc.unsmite(receivedMessage);
+				}
 				break;
 			default:
 				receivedMessage.channel.send('Invalid command.');
