@@ -1,3 +1,5 @@
+const config = require('../config.json');
+
 const addRole = (receivedMessage, role) => {
 	if (!role.length) {
 		receivedMessage.channel.send('I need a role to try to add!');
@@ -204,11 +206,11 @@ const roles = (receivedMessage) => {
 }
 
 const sendError = (receivedMessage, err) => {
-	client.fetchUser('400191346742263818').then((user) => { //Zealot's ID
-		user.send(`I borked.  Message: ${receivedMessage.content} \n Error: ${err}`);
-	});
-	client.fetchUser('358333674514677760').then((user) => { //Arken's ID
-		user.send(`I borked.  Message: ${receivedMessage.content} \n Error: ${err}`);
+	console.error(err);
+	config.administrators.forEach(userID => {
+		client.fetchUser(userID).then((user) => {
+			user.send(`I borked.  Message: ${receivedMessage.content} \n Error: ${err}`);
+		});
 	});
 }
 

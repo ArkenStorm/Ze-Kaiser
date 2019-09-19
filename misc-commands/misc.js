@@ -68,7 +68,7 @@ const smite = (receivedMessage) => {
     }
     if (receivedMessage.mentions.users.first()) {
         if (config.administrators.includes(receivedMessage.mentions.users.first().id)) {
-            receivedMessage.channel.send('That user would kill me if I denied them, so no.');
+            receivedMessage.channel.send('That user would kill me if I smote them, so no.');
         } else {
             smited.push(receivedMessage.mentions.users.first());
             receivedMessage.channel.send(`${receivedMessage.mentions.users.first()}, I smite thee!`, {
@@ -79,7 +79,7 @@ const smite = (receivedMessage) => {
 }
 
 const unsmite = (receivedMessage) => {
-    for (let i = 0; i < denied.length; i++) {
+    for (let i = 0; i < smited.length; i++) {
         if (smited[i] === receivedMessage.mentions.users.first()) {
             smited.splice(i, 1);
             receivedMessage.channel.send(`${receivedMessage.mentions.users.first()} has been allowed.`);      //Change this to be something cool
