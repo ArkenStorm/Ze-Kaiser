@@ -18,7 +18,7 @@ const addRole = (receivedMessage, role) => {
 	}
 
 	let botHighestRole = receivedMessage.guild.me.highestRole;
-	if (botHighestRole.comparePositionTo(zeRole) <= 0 || role == '@everyone') {
+	if (botHighestRole.comparePositionTo(zeRole) <= 0) {
 		receivedMessage.channel.send(`I'm sorry ${receivedMessage.author}, I'm afraid I can't do that.`);
 		return;
 	}
@@ -53,7 +53,7 @@ const addRoles = (receivedMessage, roles) => {
     for (let i = 0; i < roles.length; ++i) {
 		const role = receivedMessage.guild.roles.find(zeRole => zeRole.name === roles[i]);
 		let botHighestRole = receivedMessage.guild.me.highestRole;
-		if (role && (botHighestRole.comparePositionTo(role) <= 0 || role.name == '@everyone')) {
+		if (role && botHighestRole.comparePositionTo(role) <= 0) {
 			receivedMessage.channel.send(`I'm sorry ${receivedMessage.author}, I'm afraid I can't do that.\n(${roles[i]})`);
 		} else if (role && !receivedMessage.member.roles.has(role.id)) {
             zeRoles.push(role);
@@ -131,7 +131,7 @@ const removeRoles = (receivedMessage, roles) => {
 		const role = receivedMessage.guild.roles.find(zeRole => zeRole.name === roles[i]);
 
 		let botHighestRole = receivedMessage.guild.me.highestRole;
-		if (role && (botHighestRole.comparePositionTo(role) <= 0 || role.name == '@everyone')) {
+		if (role && botHighestRole.comparePositionTo(role) <= 0) {
 			receivedMessage.channel.send(`I'm sorry ${receivedMessage.author}, I'm afraid I can't do that.\n(${roles[i]})`);
 		} else if (role && receivedMessage.member.roles.has(role.id)) {
             zeRoles.push(role);
