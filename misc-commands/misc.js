@@ -1,5 +1,7 @@
 const base = require('../base-commands/base');
 
+let smited = [];
+
 const cooldudes = (receivedMessage) => {
     receivedMessage.channel.send('Oh no!', {
         files: ['./misc-files/taking-over.jpg']
@@ -54,9 +56,34 @@ const autoReact = (messageReaction) => {
     }
 }
 
+const smite = (receivedMessage) => {
+    if (receivedMessage.mentions.users.first()) {
+        if (receivedMessage.mentions.users.first().id === '400191346742263818' || receivedMessage.mentions.users.first().id === '358333674514677760') {
+            //First is my ID, then Taylor's ID
+            receivedMessage.channel.send('That user would kill me if I denied them, so no.');
+        } else {
+            smited.push(receivedMessage.mentions.users.first());
+            receivedMessage.channel.send(`${receivedMessage.mentions.users.first()} has been denied.`);     //Change to post the Odin "BANISHED" GIF
+        }
+    }
+}
+
+const unsmite = (receivedMessage) => {
+    for (let i = 0; i < denied.length; i++) {
+        if (smited[i] === receivedMessage.mentions.users.first()) {
+            smited.splice(i, 1);
+            receivedMessage.channel.send(`${receivedMessage.mentions.users.first()} has been allowed.`);      //Change this to be something cool
+            break;
+        }
+    }
+}
+
 module.exports = {
 	cooldudes,
     bamboozled,
     illegal,
-    autoReact
+    autoReact,
+    smite,
+    unsmite,
+    smited
 };
