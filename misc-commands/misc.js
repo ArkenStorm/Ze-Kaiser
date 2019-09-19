@@ -43,7 +43,7 @@ const autoReact = (messageReaction) => {
     if (messageReaction.message.reactions.length > 1) {
         return;
     }
-    if (messageReaction.emoji.name === starEmoji) {
+    if (messageReaction.emoji.name === config.starEmoji) {
         return;
     }
     if (messageReaction.emoji.name.toLowerCase() === 'same' || messageReaction.emoji.name.toLowerCase() === 'no_u' || messageReaction.emoji.name.toLowerCase() === 'nou') {
