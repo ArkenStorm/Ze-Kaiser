@@ -82,7 +82,7 @@ const unsmite = (receivedMessage) => {
     for (let i = 0; i < smited.length; i++) {
         if (smited[i] === receivedMessage.mentions.users.first()) {
             smited.splice(i, 1);
-            receivedMessage.channel.send(`${receivedMessage.mentions.users.first()} has been allowed.`);      //Change this to be something cool
+            receivedMessage.channel.send(`${receivedMessage.mentions.users.first()}, I am altering the deal. Pray I do not alter it further.`);
             break;
         }
     }
