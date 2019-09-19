@@ -29,7 +29,7 @@ client.on('message', (receivedMessage) => {
 });
 
 client.on('messageReactionAdd', (messageReaction, user) => {
-	if (messageReaction.message.author === client.user || misc.smited.includes(receivedMessage.author)) {
+	if (messageReaction.message.author === client.user || misc.smited.includes(messageReaction.message.author)) {
 		return;
 	}
 	misc.autoReact(messageReaction);
