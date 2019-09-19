@@ -43,6 +43,9 @@ const autoReact = (messageReaction) => {
     if (messageReaction.message.reactions.length > 1) {
         return;
     }
+    if (messageReaction.emoji.name === starEmoji) {
+        return;
+    }
     if (messageReaction.emoji.name.toLowerCase() === 'same' || messageReaction.emoji.name.toLowerCase() === 'no_u' || messageReaction.emoji.name.toLowerCase() === 'nou') {
         const random = Math.round(Math.random() * 100);
         if (random % 5 === 0) {
