@@ -96,6 +96,7 @@ const add = async (reaction, user) => {
 
 	// Sanity checks
 	if (message.author.id === user.id) {
+		await reaction.remove(user); // Remove their star
 		return message.channel.send(`${user}, you cannot star your own messages.`);
 	}
 
