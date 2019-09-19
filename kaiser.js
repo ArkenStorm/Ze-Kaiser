@@ -5,6 +5,7 @@ const security = require('./auth.json');
 const misc = require('./misc-commands/misc');
 const base = require('./base-commands/base');
 const starboard = require('./misc-commands/starboard');
+const config = require('./config.json');
 
 client.on('ready', () => {
 	console.log('Connected as ' + client.user.tag);
@@ -106,14 +107,10 @@ const processCommand = (receivedMessage) => {
 				base.roles(receivedMessage);
 				break;
 			case 'smite':
-				if (receivedMessage.author.id === '400191346742263818' || receivedMessage.author.id === '358333674514677760') {
-					misc.smite(receivedMessage);
-				}
+				misc.smite(receivedMessage);
 				break;
 			case 'unsmite':
-				if (receivedMessage.author.id === '400191346742263818' || receivedMessage.author.id === '358333674514677760') {
-					misc.unsmite(receivedMessage);
-				}
+				misc.unsmite(receivedMessage);
 				break;
 			default:
 				receivedMessage.channel.send('Invalid command.');

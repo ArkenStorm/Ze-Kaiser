@@ -1,4 +1,5 @@
 const base = require('../base-commands/base');
+const config = require('../config.json');
 
 let smited = [];
 
@@ -57,13 +58,22 @@ const autoReact = (messageReaction) => {
 }
 
 const smite = (receivedMessage) => {
+    if (!config.administrators.includes(receivedMessage.author.id)) {
+        receivedMessage.channel.send(`You fool. Only now, at the end, do you understand. Your feeble skills are no match for the power of Ze Kaiser! Now, ${receivedMessage.author}, I shall smite thee!`,
+        {
+            files: ['./misc-files/smite.gif']
+        });
+        smited.push(receivedMessage.author);
+        return;
+    }
     if (receivedMessage.mentions.users.first()) {
-        if (receivedMessage.mentions.users.first().id === '400191346742263818' || receivedMessage.mentions.users.first().id === '358333674514677760') {
-            //First is my ID, then Taylor's ID
+        if (config.administrators.includes(receivedMessage.mentions.users.first().id)) {
             receivedMessage.channel.send('That user would kill me if I denied them, so no.');
         } else {
             smited.push(receivedMessage.mentions.users.first());
-            receivedMessage.channel.send(`${receivedMessage.mentions.users.first()} has been denied.`);     //Change to post the Odin "BANISHED" GIF
+            receivedMessage.channel.send(`${receivedMessage.mentions.users.first()}, I smite thee!`, {
+                files: ['./misc-files/smite.gif']
+            });
         }
     }
 }
