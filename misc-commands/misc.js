@@ -58,6 +58,11 @@ const autoReact = (messageReaction) => {
 }
 
 const smite = (receivedMessage) => {
+    if (receivedMessage.mentions.users.first().id === receivedMessage.author.id) {
+        receivedMessage.channel.send(`${client.emojis.get('623553767467384832')}`);
+        return;
+    }
+
     if (!config.administrators.includes(receivedMessage.author.id)) {
         receivedMessage.channel.send(`You fool. Only now, at the end, do you understand. Your feeble skills are no match for the power of Ze Kaiser! Now, ${receivedMessage.author}, I shall smite thee!`,
         {
@@ -66,6 +71,7 @@ const smite = (receivedMessage) => {
         smited.push(receivedMessage.author);
         return;
     }
+
     if (receivedMessage.mentions.users.first()) {
         if (config.administrators.includes(receivedMessage.mentions.users.first().id)) {
             receivedMessage.channel.send('That user would kill me if I smote them, so no.');
