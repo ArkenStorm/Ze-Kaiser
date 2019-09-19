@@ -16,6 +16,10 @@ client.on('message', (receivedMessage) => {
 		return;
 	}
 
+	if (receivedMessage.guild === null) {
+		return;
+	}
+
 	if (receivedMessage.content.startsWith('!')) {
 		processCommand(receivedMessage);
 	}
@@ -32,11 +36,20 @@ client.on('messageReactionAdd', (messageReaction, user) => {
 	if (messageReaction.message.author === client.user || misc.smited.includes(messageReaction.message.author)) {
 		return;
 	}
+
+	if (messageReaction.message.guild === null) {
+		return;
+	}
+
 	misc.autoReact(messageReaction);
 	starboard.add(messageReaction, user);
 });
 
 client.on('messageReactionRemove', (messageReaction, user) => {
+	if (messageReaction.message.guild === null) {
+		return;
+	}
+
 	starboard.subtract(messageReaction, user);
 });
 
