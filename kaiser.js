@@ -5,6 +5,7 @@ const security = require('./auth.json');
 const misc = require('./misc-commands/misc');
 const base = require('./base-commands/base');
 const starboard = require('./misc-commands/starboard');
+const hangman = require('./misc-commands/hangman');
 const config = require('./config.json');
 
 client.on('ready', () => {
@@ -124,6 +125,15 @@ const processCommand = (receivedMessage) => {
 				break;
 			case 'unsmite':
 				misc.unsmite(receivedMessage);
+				break;
+			case 'tothegallows':
+				hangman.hangman(receivedMessage, args);
+				break;
+			case 'guess':
+				hangman.guess(receivedMessage, args);
+				break;
+			case 'hset':
+				hangman.hset(receivedMessage);
 				break;
 			default:
 				receivedMessage.channel.send('Invalid command.');
