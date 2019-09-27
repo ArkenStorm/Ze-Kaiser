@@ -244,11 +244,14 @@ const hangman = async (receivedMessage, args) => {
 				`How many guesses do you want? (!hset [1-25])`,
 				`That's not within the range [1-25].\nTry giving me a valid count.`);
 
-			wordLength = parseInt(wordLengthMsg.content);
-			guesses = parseInt(guessesMsg.content);
+			wordLength = getInt(wordLengthMsg);
+			guesses = getInt(guessesMsg);
 		} else {
-			wordLength = randomInt(Math.min(...validWordLengths), Math.max(...validWordLengths));
-			guesses = Math.max(wordLength, Math.min(Math.round(wordLength * 1.5), randomInt(5, 20)));
+			do {
+				wordLength = randomInt(Math.min(...validWordLengths), Math.max(...validWordLengths));
+				guesses = Math.max(wordLength, Math.min(Math.round(wordLength * 1.5), randomInt(5, 20)));
+				guesses = Math.min(guesses, 20);
+			} while (dictionary.filter(x => x.length === guesses).length === 0);
 		}
 
 		const newGame = new EvilHangmanGame(wordLength, guesses);
