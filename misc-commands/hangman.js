@@ -251,6 +251,7 @@ const hangman = async (receivedMessage, args) => {
 				wordLength = randomInt(Math.min(...validWordLengths), Math.max(...validWordLengths));
 				guesses = Math.max(wordLength, Math.min(Math.round(wordLength * 1.5), randomInt(5, 20)));
 				guesses = Math.min(guesses, 20);
+				guesses = Math.max(guesses, 8);
 			} while (dictionary.filter(x => x.length === guesses).length === 0);
 		}
 
