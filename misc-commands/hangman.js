@@ -113,9 +113,7 @@ class EvilHangmanGame {
 		this.currentWord = ('-').repeat(wordLength);
 		this.totalGuesses = this.remainingGuesses = guesses;
 
-		do {
-			this.words = new Set(dictionary.filter(x => x.length === wordLength));
-		} while (this.words.size == 0);
+		this.words = new Set(dictionary.filter(x => x.length === wordLength));
 	}
 
 	renderState(user) {
@@ -254,7 +252,7 @@ const hangman = async (receivedMessage, args) => {
 				guesses = Math.max(wordLength, Math.min(Math.round(wordLength * 1.5), randomInt(5, 20)));
 				guesses = Math.min(guesses, 12);
 				guesses = Math.max(guesses, 8);
-			} while (dictionary.filter(x => x.length === guesses).length === 0);
+			} while (dictionary.filter(x => x.length === wordLength).length === 0);
 		}
 
 		const newGame = new EvilHangmanGame(wordLength, guesses);
