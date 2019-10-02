@@ -113,7 +113,9 @@ class EvilHangmanGame {
 		this.currentWord = ('-').repeat(wordLength);
 		this.totalGuesses = this.remainingGuesses = guesses;
 
-		this.words = new Set(dictionary.filter(x => x.length === wordLength));
+		do {
+			this.words = new Set(dictionary.filter(x => x.length === wordLength));
+		} while (this.words.size == 0);
 	}
 
 	renderState(user) {
