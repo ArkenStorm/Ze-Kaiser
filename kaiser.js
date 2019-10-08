@@ -12,6 +12,12 @@ client.on('ready', () => {
 	console.log('Connected as ' + client.user.tag);
 });
 
+client.on('error', () => {
+	// Oh no, let's try restarting
+	console.error('Encountered an error establishing a connection to Discord, restarting...');
+	setTimeout(() => process.exit(1), 10000);
+})
+
 client.on('message', (receivedMessage) => {
 	if (receivedMessage.author === client.user || misc.smited.includes(receivedMessage.author)) {   //Make sure the bot doesn't respond to itself, otherwise weird loopage may occur
 		return;
