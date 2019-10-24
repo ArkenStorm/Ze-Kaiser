@@ -105,6 +105,9 @@ const processCommand = (receivedMessage) => {
 			case 'illegal':
 				misc.illegal(receivedMessage);
 				break;
+			case 'ontopic':
+				misc.ontopic(receivedMessage);
+				break;
 			case 'addrole':
 				base.addRole(receivedMessage, args);
 				break;
