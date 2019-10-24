@@ -36,6 +36,14 @@ const illegal = (receivedMessage) => {
     });
 }
 
+const ontopic = (receivedMessage) => {
+    receivedMessage.channel.send({
+        files: ['./misc-files/ontarget.gif']
+    }).catch((err) => {
+        base.sendError(receivedMessage, err);
+    })
+}
+
 const autoReact = (messageReaction) => {
     if (messageReaction.me) {
         return;
@@ -101,6 +109,7 @@ module.exports = {
 	cooldudes,
     bamboozled,
     illegal,
+    ontopic,
     autoReact,
     smite,
     unsmite,
