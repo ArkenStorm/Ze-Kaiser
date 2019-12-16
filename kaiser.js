@@ -18,6 +18,13 @@ client.on('error', () => {
 	setTimeout(() => process.exit(1), 10000);
 })
 
+setInterval(() => {
+	if (global.client.user === null || global.client.status == 5) {
+		console.error('WATCHDOG: Discord User is not active, attempting restart...');
+		setTimeout(() => process.exit(1), 10000);
+	}
+}, 10000);
+
 client.on('message', (receivedMessage) => {
 	if (receivedMessage.author === client.user || misc.smited.includes(receivedMessage.author)) {   //Make sure the bot doesn't respond to itself, otherwise weird loopage may occur
 		return;
