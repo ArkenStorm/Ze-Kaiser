@@ -7,6 +7,7 @@ const base = require('./base-commands/base');
 const starboard = require('./misc-commands/starboard');
 const hangman = require('./misc-commands/hangman');
 const config = require('./config.json');
+const filter = require('./utility-commands/chat-filter');
 
 client.on('ready', () => {
 	console.log('Connected as ' + client.user.tag);
@@ -26,6 +27,9 @@ setInterval(() => {
 }, 10000);
 
 client.on('message', (receivedMessage) => {
+	if (receivedMessage.author !== client.user && !filter.filter(receivedMessage)) {
+		return;
+	}
 	if (receivedMessage.author === client.user || misc.smited.includes(receivedMessage.author)) {   //Make sure the bot doesn't respond to itself, otherwise weird loopage may occur
 		return;
 	}

@@ -101,7 +101,8 @@ const add = async (reaction, user) => {
 	}
 
 	if (message.author.bot) {
-		return;
+		await reaction.remove(user);
+		return message.channel.send(`${user}, you cannot star bot messages.`);
 	}
 
 	await applyStarboardMessage(message);
@@ -114,11 +115,7 @@ const subtract = async (reaction, user) => {
 	}
 
 	// Sanity checks
-	if (message.author.id === user.id) {
-		return;
-	}
-
-	if (message.author.bot) {
+	if (message.author.id === user.id || message.author.bot) {
 		return;
 	}
 
