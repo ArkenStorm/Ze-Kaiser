@@ -27,6 +27,10 @@ function setCharAt(str, index, chr) {
     return str.substr(0, index) + chr + str.substr(index + 1);
 }
 
+function clampNum(num, min, max) {
+	return Math.max(Math.min(num, min), max);
+}
+
 class EvilHangmanGame {
 	lastInteract = new Date();
 
@@ -124,6 +128,7 @@ class EvilHangmanGame {
 			state -= 1;
 		}
 
+		state = clampNum(state, 0, asciiArt.length - 1) || 0;
 		let result = asciiArt[state];
 		result = result.replace('$g', `You have ${this.remainingGuesses} ${this.remainingGuesses != 1 ? 'guesses' : 'guess'} left`);
 		result = result.replace('$u', `Used Letters: ${Array.from(this.guessedLetters).sort().join(' ')}`);
