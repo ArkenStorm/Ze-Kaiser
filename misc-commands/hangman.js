@@ -9,7 +9,7 @@ const validWordLengths = new Set(dictionary.map(x => x.length).sort((a, b) => a 
 
 // And all the reply templates
 const asciiArtBuffer = fs.readFileSync('misc-files/hangmen.txt');
-const asciiArt = asciiArtBuffer.toString().split('\næ\n').filter(x => x.trim().length);
+const asciiArt = asciiArtBuffer.toString().split('\r?\næ\r?\n').filter(x => x.trim().length);
 
 function maxBigInt(...values) {
 	let max = 0n;
