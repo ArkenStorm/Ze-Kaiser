@@ -5,8 +5,8 @@ const config = require('../config.json');
 const vulgarity = ['damn', 'shit', 'fuck', 'bitch', 'cunt', 'nigger'];
 
 const filter = (receivedMessage) => {
-    const modChannel = message.guild.channels.find(channel => channel.name == 'mod-logs');
-    vulgarity.forEach(word => {
+    const modChannel = receivedMessage.guild.channels.find(channel => channel.name == 'mod-logs');
+    for (const word of vulgarity) {
         if (receivedMessage.content.indexOf(word) != -1) {
             receivedMessage.delete().catch((err) => {
                 base.sendError(receivedMessage, err);
@@ -29,7 +29,9 @@ const filter = (receivedMessage) => {
             }
             return false;
         }
-    });
+    }
+
+    return true;
 }
 
 module.exports = {
