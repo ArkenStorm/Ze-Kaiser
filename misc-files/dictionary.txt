@@ -40575,8 +40575,6 @@ joyrides
 joys
 joystick
 joysticks
-jp
-jr
 juan
 juas
 jubilance
@@ -40805,8 +40803,6 @@ juxtaposes
 juxtaposing
 juxtaposition
 juxtapositions
-k
-ka
 kabob
 kabobs
 kabuki
@@ -40879,14 +40875,10 @@ kayos
 kazakhstan
 kazoo
 kazoos
-kb
-kbe
 kbes
 kbyte
 kbytes
-kc
 kcal
-kcb
 kcmg
 keats
 kebab
@@ -41034,7 +41026,6 @@ keystrokes
 keyus
 keyword
 keywords
-kg
 khaki
 khan
 khans
@@ -41290,7 +41281,6 @@ kludge
 kludges
 klutz
 klutzes
-km
 knack
 knacker
 knackered
@@ -41450,8 +41440,6 @@ kosher
 koshered
 koshers
 kowtow
-kph
-kr
 kraal
 kraals
 kraft

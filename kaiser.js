@@ -44,7 +44,7 @@ client.on('message', (receivedMessage) => {
 
 	if (receivedMessage.isMentioned(client.user)) {
 		const why = client.emojis.get('612697675996856362');
-		if (why) {
+		if (why && receivedMessage) {
 			receivedMessage.react(why);
 		}
 	}
@@ -155,6 +155,9 @@ const processCommand = (receivedMessage) => {
 			case 'hset':
 				hangman.hset(receivedMessage);
 				break;
+			case 'avatar':
+				misc.avatar(receivedMessage);
+				break;
 			default:
 				receivedMessage.channel.send('Invalid command.');
 		}
@@ -166,3 +169,11 @@ const processCommand = (receivedMessage) => {
 bot_secret_token = security.token;
 
 client.login(bot_secret_token);
+
+// LAST DITCH ERROR HANDLING; Is technically deprecated, care for future
+process.on("unhandledRejection", (err) => {
+	base.sendError(undefined, err)
+});
+process.on("uncaughtException", (err) => {
+	base.sendError(undefined, err)
+});

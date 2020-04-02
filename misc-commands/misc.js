@@ -105,6 +105,26 @@ const unsmite = (receivedMessage) => {
     }
 }
 
+const avatar = (receivedMessage) => {
+    if (!receivedMessage.mentions.users.size) {
+        let embed = new Discord.RichEmbed()
+            .setImage(receivedMessage.author.displayAvatarURL)
+            .setColor('#2295d4');
+        return receivedMessage.channel.send('Your avatar: ', {
+            embed: embed
+        });
+    }
+    for (const [snowflake, user] of receivedMessage.mentions.users) {
+        let embed = new Discord.RichEmbed()
+            .setImage(user.displayAvatarURL)
+            .setColor('#2295d4');
+        receivedMessage.channel.send(`${user.username}\'s avatar: `, {
+            embed: embed
+        });
+    }
+    receivedMessage.delete();
+}
+
 module.exports = {
 	cooldudes,
     bamboozled,
@@ -113,5 +133,6 @@ module.exports = {
     autoReact,
     smite,
     unsmite,
-    smited
+    smited,
+    avatar
 };

@@ -207,9 +207,15 @@ const roles = (receivedMessage) => {
 
 const sendError = (receivedMessage, err) => {
 	console.error(err);
+	let errorEmbed = new Discord.RichEmbed().setColor('#bf260b');
+	errorEmbed.setTitle('Glitch in the Matrix');
+	if (receivedMessage) {
+		errorEmbed.addField('Message:', receivedMessage.content);
+	}
+	errorEmbed.addField('Error:', err.stack || err);
 	config.administrators.forEach(userID => {
 		client.fetchUser(userID).then((user) => {
-			user.send(`I borked.  Message: ${receivedMessage.content} \n Error: ${err}`);
+			user.send(errorEmbed);
 		});
 	});
 }
