@@ -1,5 +1,5 @@
 global.Discord = require('discord.js');
-global.client = new Discord.Client();
+global.client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION']});
 const security = require('./auth.json');
 
 const misc = require('./misc-commands/misc');
@@ -8,6 +8,8 @@ const starboard = require('./misc-commands/starboard');
 const hangman = require('./misc-commands/hangman');
 const config = require('./config.json');
 const filter = require('./utility-commands/chat-filter');
+
+var messageBeingProcessed;
 
 client.on('ready', () => {
 	console.log('Connected as ' + client.user.tag);
@@ -39,62 +41,52 @@ client.on('message', (receivedMessage) => {
 	}
 
 	if (receivedMessage.content.startsWith('!')) {
+		messageBeingProcessed = receivedMessage;
 		processCommand(receivedMessage);
 	}
-	else if (receivedMessage.isMentioned(client.user)) {
-		const why = client.emojis.get('612697675996856362');
-		if (why) {
+	else if (receivedMessage.mentions.has(client.user)) {
+		const why = client.emojis.cache.get('612697675996856362');
+		if (why && !receivedMessage.deleted) {
 			receivedMessage.react(why);
 		}
 	}
 });
 
-client.on('messageReactionAdd', (messageReaction, user) => {
-	if (messageReaction.message.author === client.user || misc.smited.includes(messageReaction.message.author)) {
+client.on('messageReactionAdd', async (reaction, user) => {
+	if (reaction.partial) {
+		try {
+			await reaction.fetch();
+		}
+		catch (error) {
+			errorMessage = {content: 'Something went wrong when fetching the message!', author: user, channel: reaction.message.channel};
+			base.sendError(errorMessage, error);
+			return;
+		}
+	}
+	if (reaction.message.guild === null || misc.smited.includes(reaction.message.author)) {
 		return;
 	}
 
-	if (messageReaction.message.guild === null) {
-		return;
-	}
-
-	misc.autoReact(messageReaction);
-	starboard.add(messageReaction, user);
+	misc.autoReact(reaction);
+	starboard.add(reaction, user);
 });
 
-client.on('messageReactionRemove', (messageReaction, user) => {
-	if (messageReaction.message.guild === null) {
+client.on('messageReactionRemove', async (reaction, user) => {
+	if (reaction.partial) {
+		try {
+			await reaction.fetch();
+		}
+		catch (error) {
+			errorMessage = {content: 'Something went wrong when fetching the message!', author: user, channel: reaction.message.channel};
+			base.sendError(errorMessage, error);
+			return;
+		}
+	}
+	if (reaction.message.guild === null) {
 		return;
 	}
 
-	starboard.subtract(messageReaction, user);
-});
-
-client.on('raw', packet => {
-	// We don't want this to run on unrelated packets
-	if (!['MESSAGE_REACTION_ADD', 'MESSAGE_REACTION_REMOVE'].includes(packet.t)) return;
-	const channel = client.channels.get(packet.d.channel_id);
-
-	// Don't refetch anything if we already have it in the cache
-	if (channel.messages.has(packet.d.message_id)) return;
-	channel.fetchMessage(packet.d.message_id).then(message => {
-		// Emojis can have identifiers of name:id format, so we have to account for that case as well
-		const emoji = packet.d.emoji.id ? `${packet.d.emoji.name}:${packet.d.emoji.id}` : packet.d.emoji.name;
-
-		const reaction = message.reactions.get(emoji);
-		reaction.fetchUsers().then(users => {
-			reaction.users = users;
-
-			// Check which type of event it is before emitting
-			if (packet.t === 'MESSAGE_REACTION_ADD') {
-				client.emit('messageReactionAdd', reaction, client.users.get(packet.d.user_id));
-			}
-
-			if (packet.t === 'MESSAGE_REACTION_REMOVE') {
-				client.emit('messageReactionRemove', reaction, client.users.get(packet.d.user_id));
-			}
-		}).catch();
-	});
+	starboard.subtract(reaction, user);
 });
 
 const processCommand = (receivedMessage) => {
@@ -171,8 +163,10 @@ client.login(bot_secret_token);
 
 // LAST DITCH ERROR HANDLING; Is technically deprecated, care for future
 process.on("unhandledRejection", (err) => {
-	base.sendError(undefined, err)
+	base.sendError(messageBeingProcessed, err);
+	messageBeingProcessed = undefined;
 });
 process.on("uncaughtException", (err) => {
-	base.sendError(undefined, err)
+	base.sendError(messageBeingProcessed, err);
+	messageBeingProcessed = undefined;
 });

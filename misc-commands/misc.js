@@ -107,16 +107,16 @@ const unsmite = (receivedMessage) => {
 
 const avatar = (receivedMessage) => {
     if (!receivedMessage.mentions.users.size) {
-        let embed = new Discord.RichEmbed()
-            .setImage(receivedMessage.author.displayAvatarURL)
+        let embed = new Discord.MessageEmbed()
+            .setImage(receivedMessage.author.displayAvatarURL())
             .setColor('#2295d4');
         return receivedMessage.channel.send('Your avatar: ', {
             embed: embed
         });
     }
     for (const [snowflake, user] of receivedMessage.mentions.users) {
-        let embed = new Discord.RichEmbed()
-            .setImage(user.displayAvatarURL)
+        let embed = new Discord.MessageEmbed()
+            .setImage(user.displayAvatarURL())
             .setColor('#2295d4');
         receivedMessage.channel.send(`${user.username}\'s avatar: `, {
             embed: embed

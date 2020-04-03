@@ -7,10 +7,10 @@ const addRole = (receivedMessage, role) => {
 	}
 	role = role.join(' ');  //For roles with multiple words
 
-	const zeRole = receivedMessage.guild.roles.find(zeRole => zeRole.name === role);
+	const zeRole = receivedMessage.guild.roles.cache.find(zeRole => zeRole.name.toLowerCase() === role.toLowerCase());
 
 	if(!zeRole) {
-		receivedMessage.channel.send(`${receivedMessage.author}, the ${role} role doesn't seem to exist.  Make sure you spelled it right.  I am case-sensitive, so make sure the casing matches, too.`);
+		receivedMessage.channel.send(`${receivedMessage.author}, the ${role} role doesn't seem to exist.  Make sure you spelled it right.`);
 		return;
 	}
 
@@ -19,17 +19,17 @@ const addRole = (receivedMessage, role) => {
 		return;
 	}
 
-	let botHighestRole = receivedMessage.guild.me.highestRole;
+	let botHighestRole = receivedMessage.guild.me.roles.highest;
 	if (botHighestRole.comparePositionTo(zeRole) <= 0) {
 		receivedMessage.channel.send(`I'm sorry ${receivedMessage.author}, I'm afraid I can't do that.`);
 		return;
 	}
 
-	if (receivedMessage.member.roles.has(zeRole.id)) {
-		receivedMessage.channel.send(`${receivedMessage.author}, you already have the "${role}" role!`);
+	if (receivedMessage.member.roles.cache.has(zeRole.id)) {
+		receivedMessage.channel.send(`${receivedMessage.author}, you already have the "${zeRole.name}" role!`);
 	} else {
-		receivedMessage.member.addRole(zeRole).then(() => {
-			receivedMessage.channel.send(`${receivedMessage.author}, you have been given the "${role}" role.`).catch((err) => {
+		receivedMessage.member.roles.add(zeRole).then(() => {
+			receivedMessage.channel.send(`${receivedMessage.author}, you have been given the "${zeRole.name}" role.`).catch((err) => {
 				sendError(receivedMessage, err);
 			});
 		}).catch((err) => {
@@ -50,37 +50,39 @@ const addRoles = (receivedMessage, roles) => {
 		return;
 	}
 
-    const zeRoles = [];
+	const zeRoles = [];
+	let previousRoles = [];
 
     for (let i = 0; i < roles.length; ++i) {
-		const role = receivedMessage.guild.roles.find(zeRole => zeRole.name === roles[i]);
-		let botHighestRole = receivedMessage.guild.me.highestRole;
+		const role = receivedMessage.guild.roles.cache.find(zeRole => zeRole.name.toLowerCase() === roles[i].toLowerCase());
+		let botHighestRole = receivedMessage.guild.me.roles.highest;
 		if (role && botHighestRole.comparePositionTo(role) <= 0) {
 			receivedMessage.channel.send(`I'm sorry ${receivedMessage.author}, I'm afraid I can't do that.\n(${roles[i]})`);
-		} else if (role && !receivedMessage.member.roles.has(role.id)) {
+		} else if (role && !receivedMessage.member.roles.cache.has(role.id)) {
             zeRoles.push(role);
         } else if (!role) {
-            receivedMessage.channel.send(`The ${roles[i]} role doesn't seem to exist.  Make sure the spelling and casing are both correct.`);
-        } else {
-            receivedMessage.channel.send(`${receivedMessage.author}, you already have the "${roles[i]}" role!`)
+            receivedMessage.channel.send(`The ${roles[i]} role doesn't seem to exist.  Make sure the spelling is correct.`);
+        } else { // already has the role
+			previousRoles.push(receivedMessage.member.roles.cache.get(role.id).name);
         }
-    }
-    receivedMessage.member.addRoles(zeRoles).then(() => {
+	}
+    receivedMessage.member.roles.add(zeRoles).then(() => {
 		const addedRoles = [];	//This is to keep the bot from pinging everyone with the roles it added
 		for (let i = 0; i < zeRoles.length; ++i) {
-			if (receivedMessage.member.roles.has(zeRoles[i].id)) {
+			if (receivedMessage.member.roles.cache.has(zeRoles[i].id)) {
 				addedRoles.push(zeRoles[i].name);
 			}
 		}
 		if (addedRoles.length) {
-			receivedMessage.channel.send(`${receivedMessage.author}, the following roles have been added: ${addedRoles.join(', ')}`);
+			let specifics = previousRoles.length ? "\nYou already have these roles: " + previousRoles.join(', ') : '';
+			receivedMessage.channel.send(`${receivedMessage.author}, the following roles have been added: ${addedRoles.join(', ') + specifics}`);
 		}
 		else {
 			receivedMessage.channel.send(`${receivedMessage.author}, you either already have all of those roles or they don't exist!`);
 		}
     }).catch((err) => {
         receivedMessage.channel.send('There was an error adding the roles.');
-    });
+	});
 }
 
 const removeRole = (receivedMessage, role) => {
@@ -90,10 +92,10 @@ const removeRole = (receivedMessage, role) => {
 	}
 	role = role.join(' ');  //For roles with multiple words
 
-	const zeRole = receivedMessage.guild.roles.find(zeRole => zeRole.name === role);
+	const zeRole = receivedMessage.guild.roles.cache.find(zeRole => zeRole.name.toLowerCase() === role.toLowerCase());
 
 	if(!zeRole) {
-		receivedMessage.channel.send(`${receivedMessage.author}, the ${role} role doesn't seem to exist.  Make sure you spelled it right.  I am case-sensitive, so make sure the casing matches, too.`);
+		receivedMessage.channel.send(`${receivedMessage.author}, the ${role} role doesn't seem to exist.  Make sure you spelled it right.`);
 		return;
 	}
 
@@ -102,16 +104,16 @@ const removeRole = (receivedMessage, role) => {
 		return;
 	}
 
-	if (receivedMessage.member.roles.has(zeRole.id)) {
-		receivedMessage.member.removeRole(zeRole).then(() => {
-			receivedMessage.channel.send(`${receivedMessage.author}, I've removed the "${role}" role from you.`).catch((err) => {
+	if (receivedMessage.member.roles.cache.has(zeRole.id)) {
+		receivedMessage.member.roles.remove(zeRole).then(() => {
+			receivedMessage.channel.send(`${receivedMessage.author}, I've removed the "${zeRole.name}" role from you.`).catch((err) => {
 				sendError(receivedMessage, err);
 			});
 		}).catch((err) => {
 			receivedMessage.channel.send('Failed to remove the role.');
 		});
 	} else {
-		receivedMessage.channel.send(`${receivedMessage.author}, you don't have the "${role}" role!`);
+		receivedMessage.channel.send(`${receivedMessage.author}, you don't have the "${zeRole.name}" role!`);
 	}
 }
 
@@ -127,28 +129,41 @@ const removeRoles = (receivedMessage, roles) => {
 		return;
 	}
 
-    const zeRoles = [];
+	const zeRoles = [];
+	let nonRemovedRoles = [];
+	let nonExistentRoles = [];
 
     for (let i = 0; i < roles.length; ++i) {
-		const role = receivedMessage.guild.roles.find(zeRole => zeRole.name === roles[i]);
+		const role = receivedMessage.guild.roles.cache.find(zeRole => zeRole.name.toLowerCase() === roles[i].toLowerCase());
 
-		let botHighestRole = receivedMessage.guild.me.highestRole;
+		let botHighestRole = receivedMessage.guild.me.roles.highest;
 		if (role && botHighestRole.comparePositionTo(role) <= 0) {
 			receivedMessage.channel.send(`I'm sorry ${receivedMessage.author}, I'm afraid I can't do that.\n(${roles[i]})`);
-		} else if (role && receivedMessage.member.roles.has(role.id)) {
+		} else if (role && receivedMessage.member.roles.cache.has(role.id)) {
             zeRoles.push(role);
         } else if (!role) {
-            receivedMessage.channel.send(`The ${roles[i]} role doesn't seem to exist.  Make sure the spelling and casing are both correct.`);
+			nonExistentRoles.push(roles[i]);
         } else {
-            receivedMessage.channel.send(`${receivedMessage.author}, you don't have the "${roles[i]}" role!`)
+			nonRemovedRoles.push(receivedMessage.channel.guild.roles.cache.get(role.id).name);
         }
-    }
-    receivedMessage.member.removeRoles(zeRoles).then(() => {
+	}
+    receivedMessage.member.roles.remove(zeRoles).then(() => {
 		const removedRoles = [];	//This is to keep the bot from pinging everyone with the roles it added
 		for (let i = 0; i < zeRoles.length; ++i) {
 			removedRoles.push(zeRoles[i].name);
 		}
-        receivedMessage.channel.send(`${receivedMessage.author}, the following roles have been removed: ${removedRoles.join(', ')}`);
+		let specifics = nonRemovedRoles.length ? "\nYou don't have have these roles: " + nonRemovedRoles.join(', ') : '' +
+			nonExistentRoles.length ? "\nThese roles don't seem to exist: " + nonExistentRoles.join(', ') + "\nMake sure the spelling is correct." : '';
+		if (removedRoles.length) {
+			receivedMessage.channel.send(`${receivedMessage.author}, the following roles have been removed: ${removedRoles.join(', ') + specifics}`);
+		}
+		else {
+			let message = specifics || "How did you even get to this condition?";
+			receivedMessage.channel.send(message);
+			if (message === 'How did you even get to this condition?') {
+				sendError(receivedMessage, "Something got real messed up somehow. Hopefully the error can be determined by looking at the above message.")
+			}
+		}
     }).catch((err) => {
         receivedMessage.channel.send('There was an error removing the roles.');
     });
@@ -188,14 +203,14 @@ const help = (receivedMessage) => {
 }
 
 const roles = (receivedMessage) => {
-	let botHighestRole = receivedMessage.guild.me.highestRole;
-	const roleEmbed = new Discord.RichEmbed().setColor('#2295d4');
+	let botHighestRole = receivedMessage.guild.me.roles.highest;
+	const roleEmbed = new Discord.MessageEmbed().setColor('#2295d4');
 	const eligibleRoles = [];
-	receivedMessage.guild.roles.forEach(role => {
+	for (const [snowflake, role] of receivedMessage.guild.roles.cache) {
 		if (botHighestRole.comparePositionTo(role) > 0 && role.name != '@everyone' && role.editable && role.name.indexOf('complete') == -1) {
 			eligibleRoles.push(role.name);
 		}
-	});
+	};
 	eligibleRoles.sort();
 	roleEmbed.setTitle('Available Role(s):');
 	roleEmbed.setDescription(eligibleRoles.join(', '));
@@ -207,14 +222,19 @@ const roles = (receivedMessage) => {
 
 const sendError = (receivedMessage, err) => {
 	console.error(err);
-	let errorEmbed = new Discord.RichEmbed().setColor('#bf260b');
+	let errorEmbed = new Discord.MessageEmbed().setColor('#bf260b');
 	errorEmbed.setTitle('Glitch in the Matrix');
 	if (receivedMessage) {
 		errorEmbed.addField('Message:', receivedMessage.content);
+		errorEmbed.addField('Guilty User:', receivedMessage.author);
+		errorEmbed.addField('Channel:', receivedMessage.channel);
+		if (receivedMessage.guild) {
+			errorEmbed.addField('Server/Guild:', receivedMessage.guild);
+		}
 	}
 	errorEmbed.addField('Error:', err.stack || err);
 	config.administrators.forEach(userID => {
-		client.fetchUser(userID).then((user) => {
+		client.users.fetch(userID).then((user) => {
 			user.send(errorEmbed);
 		});
 	});

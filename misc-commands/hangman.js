@@ -228,7 +228,7 @@ const hangman = async (receivedMessage, args) => {
 				// It's been long enough to just start a new game regardless of the old one.
 				activeGames.delete(receivedMessage.channel.id);
 			} else {
-				receivedMessage.reply(`${client.emojis.get('625182760494956544')} This channel already has an active game going...`);
+				receivedMessage.reply(`${client.emojis.cache.get('625182760494956544')} This channel already has an active game going...`);
 				return;
 			}
 		}
@@ -239,7 +239,7 @@ const hangman = async (receivedMessage, args) => {
 			const wordLengthMsg = await getClarification(receivedMessage,
 				msg => validWordLengths.has(getInt(msg)),
 				`How long of a word do you want? (!hset [${Math.min(...validWordLengths)}-${Math.max(...validWordLengths)}])`,
-				`Sorry, I don't have any words of that length ${client.emojis.get('626104347813740586')}\nTry giving me a valid length.`);
+				`Sorry, I don't have any words of that length ${client.emojis.cache.get('626104347813740586')}\nTry giving me a valid length.`);
 
 			const guessesMsg = await getClarification(receivedMessage,
 				msg => {
@@ -279,7 +279,7 @@ const guess = async (receivedMessage, args) => {
 	try {
 		let currentGame = activeGames.get(receivedMessage.channel.id);
 		if (!currentGame) {
-			return receivedMessage.reply(`${client.emojis.get('625182760494956544')} You need to start a game first...`);
+			return receivedMessage.reply(`${client.emojis.cache.get('625182760494956544')} You need to start a game first...`);
 		}
 
 		if (!args[0]) {
@@ -291,7 +291,7 @@ const guess = async (receivedMessage, args) => {
 		}
 
 		if (currentGame.guessedLetters.has(args[0])) {
-			return receivedMessage.reply(`That letter has already been guessed. ${client.emojis.get('623553767467384832')}`);
+			return receivedMessage.reply(`That letter has already been guessed. ${client.emojis.cache.get('623553767467384832')}`);
 		}
 
 		currentGame.makeGuess(args[0]);

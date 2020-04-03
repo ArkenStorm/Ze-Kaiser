@@ -32,10 +32,10 @@ function generateEmbed(message) {
 	}
 
 	let reactionCount = 0;
-	const starReactionObj = message.reactions.find(x => x.emoji.name === starEmoji);
+	const starReactionObj = message.reactions.cache.find(x => x.emoji.name === starEmoji);
 	if (starReactionObj) {
 		reactionCount = starReactionObj.count;
-		if (starReactionObj.users.has(message.author.id)) {
+		if (starReactionObj.users.cache.has(message.author.id)) {
 			reactionCount -= 1;
 		}
 	}
@@ -44,7 +44,7 @@ function generateEmbed(message) {
 		reactionCount = 0; // Force message deletion and such if below threshold
 	}
 
-	return new Discord.RichEmbed()
+	return new Discord.MessageEmbed()
 		.setColor(embedColor)
 		.setDescription(message.cleanContent)
 		.setAuthor(message.author.tag, message.author.displayAvatarURL)
@@ -55,9 +55,9 @@ function generateEmbed(message) {
 		.setImage(image);
 }
 
-async function applyStarboardMessage(message) {
-	const starChannel = message.guild.channels.find(channel => channel.name == 'starboard-channel');
-	if (!starChannel) {
+async function applyStarboardMessage(message, subtract = false) {
+	const starChannel = message.guild.channels.cache.find(channel => channel.name == 'starboard-channel');
+	if (!starChannel && message.reactions.cache.size === 1 && !subtract) { // only happens when the first emoji is added on a message
 		return message.channel.send(`It appears that you do not have a \`Starboard\` channel.`);
 	}
 
@@ -66,10 +66,10 @@ async function applyStarboardMessage(message) {
 		const reactionCount = parseInt(embed.fields[0].value);
 
 		// If a star message already exists, edit the old one instead of making a new one
-		const fetch = await starChannel.fetchMessages();
+		const fetch = await starChannel.messages.fetch({ limit: 100 });
 		const oldStarMessage = fetch.find(m => m.embeds.length && m.embeds[0].footer.text.endsWith(message.id));
 		if (oldStarMessage) {
-			const starMsg = await starChannel.fetchMessage(oldStarMessage.id);
+			const starMsg = await starChannel.messages.fetch(oldStarMessage.id);
 
 			if (reactionCount === 0) {
 				// No reactions, delete the message
@@ -119,7 +119,7 @@ const subtract = async (reaction, user) => {
 		return;
 	}
 
-	await applyStarboardMessage(message);
+	await applyStarboardMessage(message, true);
 }
 
 module.exports = {

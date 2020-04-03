@@ -8,7 +8,7 @@ const filter = (receivedMessage) => {
     if (!receivedMessage.guild) {
         return false;
     }
-    const modChannel = receivedMessage.guild.channels.find(channel => channel.name == 'mod-logs');
+    const modChannel = receivedMessage.guild.channels.cache.find(channel => channel.name == 'mod-logs');
     for (const word of vulgarity) {
         if (receivedMessage.content.indexOf(word) != -1) {
             receivedMessage.delete().catch((err) => {
