@@ -58922,24 +58922,13 @@ pythagoras
 pythagorean
 python
 pythons
-q
 qantas
 qatar
-qc
 qdos
 qed
-ql
-qls
 qmon
-qom
-qpac
 qptr
 qram
-qt
-qtyp
-qua
-quaalude
-quaaludes
 quack
 quacked
 quackery
@@ -59370,8 +59359,6 @@ quotidian
 quotient
 quotients
 quoting
-r
-ra
 rabat
 rabbet
 rabbets
@@ -59390,7 +59377,6 @@ rabid
 rabidity
 rabidly
 rabies
-rac
 raccoon
 raccoons
 race
@@ -59528,8 +59514,6 @@ radixes
 radnor
 radnorshire
 radon
-rae
-raf
 rafferty
 raffia
 raffish
@@ -59544,7 +59528,6 @@ rafters
 rafting
 rafts
 rag
-raga
 ragamuffin
 ragamuffins
 ragas
@@ -59570,7 +59553,6 @@ ragtag
 ragtime
 ragweed
 ragwort
-rah
 raid
 raided
 raider
@@ -59786,8 +59768,6 @@ rapaciously
 rapaciousness
 rapacity
 rape
-raped
-rapes
 rapeseeds
 raphael
 rapid
@@ -59801,9 +59781,6 @@ rapier
 rapiers
 rapine
 rapines
-raping
-rapist
-rapists
 rapped
 rappel
 rappelled
@@ -60029,8 +60006,6 @@ razzed
 razzes
 razzing
 razzmatazz
-rd
-re
 rea
 reabsorb
 reabsorbed
@@ -60352,7 +60327,6 @@ rebutted
 rebutter
 rebutters
 rebutting
-rec
 recalcitrance
 recalcitrant
 recalculate

@@ -4,7 +4,7 @@ const fs = require('fs');
 
 // Read in the dictionary
 const dictionaryBuffer = fs.readFileSync('misc-files/dictionary.txt');
-const dictionary = dictionaryBuffer.toString().split('\n').filter(x => x.length);
+const dictionary = dictionaryBuffer.toString().split(/\r?\n/).filter(x => x.length);
 const validWordLengths = new Set(dictionary.map(x => x.length).sort((a, b) => a - b));
 
 // And all the reply templates
@@ -256,7 +256,7 @@ const hangman = async (receivedMessage, args) => {
 				wordLength = randomInt(Math.min(...validWordLengths), Math.max(...validWordLengths));
 				guesses = Math.max(wordLength, Math.min(Math.round(wordLength * 1.5), randomInt(5, 20)));
 				guesses = Math.min(guesses, 12);
-				guesses = Math.max(guesses, 8);
+				guesses = Math.max(guesses, Math.round(wordLength / 3) + 4);
 			} while (dictionary.filter(x => x.length === wordLength).length === 0);
 		}
 
