@@ -176,7 +176,7 @@ const info = (receivedMessage, channel) => {
 	}
 	channel = channel.join();
 
-	const zeChannel = receivedMessage.guild.channels.find(zeChannel => zeChannel.name === channel );
+	const zeChannel = receivedMessage.guild.channels.cache.find(zeChannel => zeChannel.name === channel );
 	if (!zeChannel) {
 		receivedMessage.channel.send('Channel not found. You must type the channel name exactly as it appears in the list, including dashes.');
 		return;
@@ -194,7 +194,7 @@ const info = (receivedMessage, channel) => {
 const help = (receivedMessage) => {
 	let allCommands = require('./help.json');
 
-	const helpEmbed = new Discord.RichEmbed().setColor('#2295d4');
+	const helpEmbed = new Discord.MessageEmbed().setColor('#2295d4');
 	Object.keys(allCommands).forEach(command => {
 		const currentCommand = allCommands[command];
 		helpEmbed.addField(currentCommand.title, currentCommand.description);
