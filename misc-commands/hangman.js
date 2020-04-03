@@ -255,6 +255,13 @@ const hangman = async (receivedMessage, args) => {
 			} while (dictionary.filter(x => x.length === wordLength).length === 0);
 		}
 
+		if (wordLength <= 7 && guesses <= 8) { // arbitrary numbers
+			guesses = Math.max(4, wordLength - 2) + 8;
+		}
+		else if (wordLength >= 10 && guesses >= 12) {
+			guesses = Math.round(wordLength / 2) + 3;
+		}
+
 		const newGame = new EvilHangmanGame(wordLength, guesses);
 		activeGames.set(receivedMessage.channel.id, newGame);
 		receivedMessage.channel.send('```' + newGame.renderState() + '```');
@@ -279,6 +286,13 @@ const guess = async (receivedMessage, args) => {
 
 		if (!args[0]) {
 			return receivedMessage.reply('I need a letter to guess with.');
+		}
+
+		if (args[0] == 'pardonthevictim') {
+			activeGames.delete(receivedMessage.channel.id);
+			await receivedMessage.channel.send("Game ended.");
+			receivedMessage.delete();
+			return;
 		}
 
 		if (args[0].length != 1) {
