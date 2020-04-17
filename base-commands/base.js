@@ -246,6 +246,7 @@ const sendError = (receivedMessage, err) => {
 }
 
 module.exports = {
+	complete,
     addRole,
     addRoles,
 	removeRole,
