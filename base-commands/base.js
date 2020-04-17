@@ -1,5 +1,10 @@
 const config = require('../config.json');
 
+const complete = (receivedMessage, role) => {
+	addRole(receivedMessage, role + " complete");
+	removeRole(receivedMessage, role);
+}
+
 const addRole = (receivedMessage, role) => {
 	if (!role.length) {
 		receivedMessage.channel.send('I need a role to try to add!');

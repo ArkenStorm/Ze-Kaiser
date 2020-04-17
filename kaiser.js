@@ -122,6 +122,9 @@ const processCommand = (receivedMessage) => {
 			case 'removeroles':
 				base.removeRoles(receivedMessage, args);
 				break;
+			case 'complete':
+				base.complete(receivedMessage, args);
+				break;
 			case 'info':
 				base.info(receivedMessage, args);
 				break;
