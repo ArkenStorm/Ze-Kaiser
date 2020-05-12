@@ -1,5 +1,11 @@
+const axios = require('axios').default;
+const { exec } = require('child_process');
+const fs = require("fs");
+const tmp = require('tmp-promise');
 const base = require('../base-commands/base');
 const config = require('../config.json');
+
+tmp.setGracefulCleanup();
 
 let smited = [];
 
@@ -155,6 +161,110 @@ const warning = (receivedMessage) => {
 	});
 }
 
+const checkVideo = (url) => {
+	const imageLink = url.split('.');
+	const typeOfAttachment = imageLink[imageLink.length - 1];
+	const image = /(mp4|mkv|webm|mov)/gi.test(typeOfAttachment);
+	if (!image) {
+		return '';
+	};
+	return url;
+}
+
+const urlRegex = /(https?|ftp):\/\/[^\s\/$.?#].[^\s]*/;
+const vidtogif = async (message) => {
+	let image = '';
+
+	if (message.attachments.size > 0) {
+		image = checkVideo(message.attachments.array()[0].url);
+	}
+
+	const textUrl = urlRegex.exec(message.content);
+	if (image === '' && textUrl) {
+		image = checkVideo(textUrl[0]);
+	}
+
+	if (image === '' && message.embeds.length) {
+		const embed = message.embeds[0];
+		if (embed.type === 'video') {
+			image = embed.url;
+		}
+	}
+
+	// If we still don't have an video
+	if (image === '') {
+		return message.channel.send(`Please give me a video to work with!`);
+	}
+
+	let fileResponse;
+	try {
+		fileResponse = await axios.get(image, {responseType: 'stream', maxContentLength: config.maxVideoSize, timeout: 200});
+	} catch (e) {
+		if (e.toJSON) {
+			const err = e.toJSON();
+			if (err.message.includes("timeout"))
+				return message.channel.send(`Video download timed-out!`);
+
+			else if (err.message.includes("maxContentLength"))
+				return message.channel.send(`That video is too large (${(config.maxVideoSize / 1000000).toFixed()}MB cap)!`);
+
+			else {
+				base.sendError(message, e);
+				return message.channel.send(`Something went wrong downloading the video. An admin has been notified of this.`);
+			}
+
+		} else {
+			base.sendError(message, e);
+			return message.channel.send(`Something went very wrong downloading the video. An admin has been notified of this.`);
+		}
+	}
+
+	const videoStream = fileResponse.data;
+
+	const tempVideoFile = await tmp.file();
+	const fileStream = fs.createWriteStream(tempVideoFile.path);
+
+	await new Promise((resolve, reject) => {
+		videoStream.on('close', resolve);
+		videoStream.on('error', reject);
+		fileStream.on('error', reject);
+
+		videoStream.pipe(fileStream);
+	});
+
+	const tempGIFFile = await tmp.file({postfix: ".gif"});
+
+	const workingMessage = await message.reply("Working on it!");
+
+	exec(`yes | ffmpeg -i ${tempVideoFile.path} -vf "fps=30,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 0 -f gif ${tempGIFFile.path}`,
+		async (error, stdout, stderr) => {
+			try {
+				if (error) {
+					base.sendError(message, error);
+					return message.channel.send(`Something went wrong encoding the GIF. An admin has been notified of this.`);
+				}
+
+				// Otherwise it's good, lets send the GIF!
+				await message.reply("posted this:", {
+					files: [tempGIFFile.path]
+				}).catch((err) => {
+					base.sendError(receivedMessage, err);
+				});
+
+				await workingMessage.delete().catch((err) => {
+					base.sendError(receivedMessage, err);
+				});
+
+				await message.delete().catch((err) => {
+					base.sendError(receivedMessage, err);
+				});
+			} finally {
+				tempVideoFile.cleanup();
+				tempGIFFile.cleanup();
+			}
+		});
+}
+
 module.exports = {
 	meme,
 	autoReact,
@@ -162,5 +272,6 @@ module.exports = {
 	unsmite,
 	smited,
 	avatar,
-	warning
+	warning,
+	vidtogif
 };

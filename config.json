@@ -10,5 +10,7 @@
 	"starMinCount": 5,
 
 	"retryCount": 3,
-	"hangmanTimeout": 600000
+	"hangmanTimeout": 600000,
+
+	"maxVideoSize": 10000000
 }

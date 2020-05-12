@@ -156,6 +156,9 @@ const processCommand = (receivedMessage) => {
 			case 'warning':
 				misc.warning(receivedMessage);
 				break;
+			case 'makegif':
+				misc.vidtogif(receivedMessage);
+				break;
 			default:
 				receivedMessage.channel.send('Invalid command.');
 		}
