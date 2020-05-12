@@ -24,7 +24,11 @@
 		"description": "Removes a role."
 	},
 	"removeroles": {
-		"title": "!removeroles <role1>, <role2>, …<roleN>",
+		"title": "!removeroles <role1>, <role2>, ...<roleN>",
 		"description": "Removes multiple roles."
+	},
+	"complete": {
+		"title": "!complete <role> OR !complete <role1>, <role2>, ...<roleN>",
+		"description": "Removes the class role(s) and adds the <class> complete role."
 	}
 }
