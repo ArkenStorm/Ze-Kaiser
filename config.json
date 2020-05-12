@@ -1,10 +1,14 @@
 {
-  "administrators": ["358333674514677760", "400191346742263818", "333530784495304705"],
+	"administrators": [
+		"358333674514677760",
+		"400191346742263818",
+		"333530784495304705"
+	],
+	
+	"starEmoji": "⭐",
+	"starEmbedColor": 15844367,
+	"starMinCount": 5,
 
-  "starEmoji": "⭐",
-  "starEmbedColor": 15844367,
-  "starMinCount": 5,
-
-  "retryCount": 3,
-  "hangmanTimeout": 600000
+	"retryCount": 3,
+	"hangmanTimeout": 600000
 }

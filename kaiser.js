@@ -99,16 +99,16 @@ const processCommand = (receivedMessage) => {
 
 		switch(primaryCommand) {
 			case 'cooldudes':
-				misc.cooldudes(receivedMessage);
-				break;
 			case 'bamboozled':
-				misc.bamboozled(receivedMessage);
-				break;
 			case 'illegal':
-				misc.illegal(receivedMessage);
-				break;
 			case 'ontopic':
-				misc.ontopic(receivedMessage);
+			case 'bigbean':
+			case 'bigbrain':
+			case 'kronk':
+			case 'comingtogether':
+			case 'dewit':
+			case 'doit':
+				misc.meme(receivedMessage, primaryCommand);
 				break;
 			case 'addrole':
 				base.addRole(receivedMessage, args);
@@ -121,6 +121,9 @@ const processCommand = (receivedMessage) => {
 				break;
 			case 'removeroles':
 				base.removeRoles(receivedMessage, args);
+				break;
+			case 'complete':
+				base.complete(receivedMessage, args);
 				break;
 			case 'info':
 				base.info(receivedMessage, args);
@@ -148,6 +151,10 @@ const processCommand = (receivedMessage) => {
 				break;
 			case 'avatar':
 				misc.avatar(receivedMessage);
+				break;
+			case 'buhgok':
+			case 'warning':
+				misc.warning(receivedMessage);
 				break;
 			default:
 				receivedMessage.channel.send('Invalid command.');
