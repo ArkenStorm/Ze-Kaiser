@@ -193,7 +193,7 @@ const vidtogif = async (message) => {
 
 	// If we still don't have an video
 	if (image === '') {
-		return message.channel.send(`Please give me a video to work with!`);
+		return message.reply(`Please give me a video to work with!`);
 	}
 
 	let fileResponse;
@@ -203,19 +203,19 @@ const vidtogif = async (message) => {
 		if (e.toJSON) {
 			const err = e.toJSON();
 			if (err.message.includes("timeout"))
-				return message.channel.send(`Video download timed-out!`);
+				return message.reply(`Video download timed-out!`);
 
 			else if (err.message.includes("maxContentLength"))
-				return message.channel.send(`That video is too large (${(config.maxVideoSize / 1000000).toFixed()}MB cap)!`);
+				return message.reply(`That video is too large (${(config.maxVideoSize / 1000000).toFixed()}MB cap)!`);
 
 			else {
 				base.sendError(message, e);
-				return message.channel.send(`Something went wrong downloading the video. An admin has been notified of this.`);
+				return message.reply(`Something went wrong downloading the video. An admin has been notified of this.`);
 			}
 
 		} else {
 			base.sendError(message, e);
-			return message.channel.send(`Something went very wrong downloading the video. An admin has been notified of this.`);
+			return message.reply(`Something went very wrong downloading the video. An admin has been notified of this.`);
 		}
 	}
 
@@ -241,7 +241,7 @@ const vidtogif = async (message) => {
 			try {
 				if (error) {
 					base.sendError(message, error);
-					return message.channel.send(`Something went wrong encoding the GIF. An admin has been notified of this.`);
+					return message.reply(`Something went wrong encoding the GIF. An admin has been notified of this.`);
 				}
 
 				// Otherwise it's good, lets send the GIF!
