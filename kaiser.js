@@ -167,7 +167,7 @@ const processCommand = (receivedMessage) => {
 				misc.startListening(receivedMessage);
 				break;
 			case 'stoplistening':
-				misc.stopListening(receivedMessage, args[0]);
+				misc.stopListening(receivedMessage, args);
 				break;
 			default:
 				receivedMessage.channel.send('Invalid command.');

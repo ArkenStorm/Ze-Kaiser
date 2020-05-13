@@ -302,11 +302,9 @@ const stopListening = (receivedMessage, timeout = 0) => {
 		return;
 	}
 
-	let time = parseInt(timeout, 10);
-	if (!time && time !== 0) {
-		receivedMessage.reply('Invalid timeout argument.').catch((err) => {
-			base.sendError(receivedMessage, err);
-		});
+	let time;
+	if (typeof timeout === 'object' && typeof timeout[timeout.length - 1] === 'string') {
+		time = parseInt(timeout[timeout.length - 1], 10);
 	}
 
 	let channel = receivedMessage.mentions.channels.first() || receivedMessage.channel;
