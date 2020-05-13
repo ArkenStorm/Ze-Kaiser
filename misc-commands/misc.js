@@ -198,7 +198,7 @@ const vidtogif = async (message) => {
 
 	let fileResponse;
 	try {
-		fileResponse = await axios.get(image, {responseType: 'stream', maxContentLength: config.maxVideoSize, timeout: 200});
+		fileResponse = await axios.get(image, {responseType: 'stream', maxContentLength: config.maxVideoSize, timeout: config.videoDownloadTimeout});
 	} catch (e) {
 		if (e.toJSON) {
 			const err = e.toJSON();

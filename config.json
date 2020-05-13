@@ -12,5 +12,6 @@
 	"retryCount": 3,
 	"hangmanTimeout": 600000,
 
-	"maxVideoSize": 10000000
+	"maxVideoSize": 10000000,
+	"videoDownloadTimeout": 5000
 }
