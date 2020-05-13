@@ -261,15 +261,15 @@ const vidtogif = async (message) => {
 				await message.reply("posted this:", {
 					files: [tempGIFFile.path]
 				}).catch((err) => {
-					base.sendError(receivedMessage, err);
+					base.sendError(message, err);
 				});
 
 				await workingMessage.delete().catch((err) => {
-					base.sendError(receivedMessage, err);
+					base.sendError(message, err);
 				});
 
 				await message.delete().catch((err) => {
-					base.sendError(receivedMessage, err);
+					base.sendError(message, err);
 				});
 			} finally {
 				tempVideoFile.cleanup();
