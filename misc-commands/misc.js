@@ -249,7 +249,7 @@ const vidtogif = async (message) => {
 
 	const workingMessage = await message.reply("Working on it!");
 
-	exec(`yes | ffmpeg -i ${tempVideoFile.path} -vf "fps=30,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 0 -f gif ${tempGIFFile.path}`,
+	exec(`yes | ffmpeg -i ${tempVideoFile.path} -vf "fps=30,scale=320:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 0 -f gif ${tempGIFFile.path}`,
 		async (error, stdout, stderr) => {
 			try {
 				if (error) {
