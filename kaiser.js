@@ -32,7 +32,7 @@ client.on('message', (receivedMessage) => {
 	if (receivedMessage.author !== client.user && !filter.filter(receivedMessage)) {
 		return;
 	}
-	if (receivedMessage.author === client.user || misc.smited.includes(receivedMessage.author)) {   //Make sure the bot doesn't respond to itself, otherwise weird loopage may occur
+	if (receivedMessage.author === client.user || misc.smited.has(receivedMessage.author)) {   //Make sure the bot doesn't respond to itself, otherwise weird loopage may occur
 		return;
 	}
 
@@ -63,7 +63,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
 			return;
 		}
 	}
-	if (reaction.message.guild === null || misc.smited.includes(reaction.message.author)) {
+	if (reaction.message.guild === null || misc.smited.has(reaction.message.author)) {
 		return;
 	}
 
@@ -96,6 +96,10 @@ const processCommand = (receivedMessage) => {
 		let primaryCommand = splitCommand[0] // The first word directly after the exclamation is the command
 		primaryCommand = primaryCommand.toLowerCase();  //make the command lower case to eliminate case sensitivity
 		let args = splitCommand.slice(1) // All other words are arguments/parameters/options for the command
+
+		if (misc.ignoredChannels.has(receivedMessage.channel) && primaryCommand !== 'startlistening') {
+			return;
+		}
 
 		switch(primaryCommand) {
 			case 'cooldudes':
@@ -158,6 +162,12 @@ const processCommand = (receivedMessage) => {
 				break;
 			case 'makegif':
 				misc.vidtogif(receivedMessage);
+				break;
+			case 'startlistening':
+				misc.startListening(receivedMessage);
+				break;
+			case 'stoplistening':
+				misc.stopListening(receivedMessage, args[0]);
 				break;
 			default:
 				receivedMessage.channel.send('Invalid command.');

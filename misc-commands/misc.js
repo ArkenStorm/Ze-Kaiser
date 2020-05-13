@@ -7,7 +7,8 @@ const config = require('../config.json');
 
 tmp.setGracefulCleanup();
 
-let smited = [];
+let smited = new Set();
+let ignoredChannels = new Set();
 
 const meme = (receivedMessage, command) => {
 	let file;
@@ -81,6 +82,11 @@ const autoReact = (messageReaction) => {
 }
 
 const smite = (receivedMessage) => {
+	if (!receivedMessage.mentions.users.first()) {
+		meme(receivedMessage, 'illegal');
+		return;
+	}
+
 	if (receivedMessage.mentions.users.first().id === receivedMessage.author.id) {
 		receivedMessage.channel.send(`${client.emojis.cache.get('623553767467384832')}`);
 		return;
@@ -91,7 +97,7 @@ const smite = (receivedMessage) => {
 		{
 			files: ['./misc-files/smite.gif']
 		});
-		smited.push(receivedMessage.author);
+		smited.add(receivedMessage.author);
 		return;
 	}
 
@@ -99,7 +105,7 @@ const smite = (receivedMessage) => {
 		if (config.administrators.includes(receivedMessage.mentions.users.first().id)) {
 			receivedMessage.channel.send('That user would kill me if I smote them, so no.');
 		} else {
-			smited.push(receivedMessage.mentions.users.first());
+			smited.add(receivedMessage.mentions.users.first());
 			receivedMessage.channel.send(`${receivedMessage.mentions.users.first()}, I smite thee!`, {
 				files: ['./misc-files/smite.gif']
 			});
@@ -108,12 +114,19 @@ const smite = (receivedMessage) => {
 }
 
 const unsmite = (receivedMessage) => {
-	for (let i = 0; i < smited.length; i++) {
-		if (smited[i] === receivedMessage.mentions.users.first()) {
-			smited.splice(i, 1);
-			receivedMessage.channel.send(`${receivedMessage.mentions.users.first()}, I am altering the deal. Pray I do not alter it further.`);
-			break;
-		}
+	if (!config.administrators.includes(receivedMessage.author.id)) {
+		receivedMessage.channel.send(`What, *exactly*, do you think you\'re doing, ${receivedMessage.author}?`);
+		return;
+	}
+	if (!receivedMessage.mentions.users.first()) {
+		meme(receivedMessage, 'illegal');
+		return;
+	}
+	if (smited.delete(receivedMessage.mentions.users.first())) {
+		receivedMessage.channel.send(`${receivedMessage.mentions.users.first()}, I am altering the deal. Pray I do not alter it further.`);
+	}
+	else {
+		receivedMessage.reply("That user has not incurred your wrath at this time.");
 	}
 }
 
@@ -265,6 +278,48 @@ const vidtogif = async (message) => {
 		});
 }
 
+const startListening = (receivedMessage, channel) => {
+	if (!config.administrators.includes(receivedMessage.author.id)) {
+		receivedMessage.channel.send(`Why must you be like this, ${receivedMessage.author}?`);
+		return;
+	}
+	
+	if (channel) {
+		ignoredChannels.delete(channel);
+		return;
+	}
+
+	let silencedChannel = receivedMessage.mentions.channels.first() || receivedMessage.channel;
+	ignoredChannels.delete(silencedChannel);
+	receivedMessage.channel.send(`I will no longer ignore ${silencedChannel}.`).catch((err) => {
+		base.sendError(receivedMessage, err);
+	});
+}
+
+const stopListening = (receivedMessage, timeout = 0) => {
+	if (!config.administrators.includes(receivedMessage.author.id)) {
+		receivedMessage.channel.send(`You can't tell me what to do, ${receivedMessage.author}!`);
+		return;
+	}
+
+	let time = parseInt(timeout, 10);
+	if (!time && time !== 0) {
+		receivedMessage.reply('Invalid timeout argument.').catch((err) => {
+			base.sendError(receivedMessage, err);
+		});
+	}
+
+	let channel = receivedMessage.mentions.channels.first() || receivedMessage.channel;
+	ignoredChannels.add(channel);
+	receivedMessage.channel.send(`I will ignore ${channel} for the time being.`).catch((err) => {
+		base.sendError(receivedMessage, err);
+	});
+
+	if (time) {
+		setTimeout(() => startListening(receivedMessage, channel), time);
+	}
+}
+
 module.exports = {
 	meme,
 	autoReact,
@@ -273,5 +328,8 @@ module.exports = {
 	smited,
 	avatar,
 	warning,
-	vidtogif
+	vidtogif,
+	startListening,
+	stopListening,
+	ignoredChannels
 };
