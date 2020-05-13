@@ -266,6 +266,7 @@ const vidtogif = async (message) => {
 
 				await message.delete();
 			} catch (err) {
+				message.reply(`Something went wrong sending the GIF. An admin has been notified of this.`);
 				base.sendError(message, err);
 			} finally {
 				tempVideoFile.cleanup();
