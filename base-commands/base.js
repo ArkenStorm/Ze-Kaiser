@@ -1,7 +1,7 @@
 const config = require('../config.json');
 
 const complete = (receivedMessage, args) => {
-	let roles = args.join(' ').split(', ');
+	let roles = args.join(' ').split(',').map(x => x.trim());
 	if (roles.length > 1) {
 		removeRoles(receivedMessage, args).then(() => {
 			roles = roles.map(role => role + ' complete,');
