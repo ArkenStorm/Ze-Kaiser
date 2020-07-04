@@ -112,6 +112,8 @@ const processCommand = (receivedMessage) => {
 			case 'comingtogether':
 			case 'dewit':
 			case 'doit':
+			case 'thoughtpolice':
+			case 'enjoythings':
 				misc.meme(receivedMessage, primaryCommand);
 				break;
 			case 'addrole':
@@ -169,6 +171,9 @@ const processCommand = (receivedMessage) => {
 			case 'stoplistening':
 				misc.stopListening(receivedMessage, args);
 				break;
+			case 'pull':
+			case 'gitpull':
+				base.gitPull(receivedMessage);
 			default:
 				receivedMessage.channel.send('Invalid command.');
 		}
