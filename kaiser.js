@@ -174,6 +174,7 @@ const processCommand = (receivedMessage) => {
 			case 'pull':
 			case 'gitpull':
 				base.gitPull(receivedMessage);
+				break;
 			default:
 				receivedMessage.channel.send('Invalid command.');
 		}

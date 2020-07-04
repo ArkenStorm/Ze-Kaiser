@@ -41,6 +41,10 @@ const meme = (receivedMessage, command) => {
 		case 'doit':
 			file = './misc-files/dewit.gif';
 			break;
+		case 'thoughtpolice':
+		case 'enjoythings':
+			file = './misc-files/enjoy_things.png';
+			break;
 		default:
 			caption = 'How did you do this?';
 			file = './misc-files/is_that_legal.gif';
