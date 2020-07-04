@@ -58,7 +58,7 @@ const meme = (receivedMessage, command) => {
 }
 
 const autoReact = (messageReaction) => {
-	if (messageReaction.me) {
+	if (messageReaction.me || messageReaction.message.author == client.user) {
 		return;
 	}
 	if (messageReaction.message.reactions.length > 1) {

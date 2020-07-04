@@ -56,7 +56,7 @@ function generateEmbed(message) {
 }
 
 async function applyStarboardMessage(message, subtract = false) {
-	const starChannel = message.guild.channels.cache.find(channel => channel.name == 'starboard-channel');
+	const starChannel = message.guild.channels.cache.find(channel => channel.name.toLowerCase().indexOf('starboard') !== -1);
 	if (!starChannel && message.reactions.cache.size === 1 && !subtract) { // only happens when the first emoji is added on a message
 		return message.channel.send(`It appears that you do not have a \`Starboard\` channel.`);
 	}
@@ -73,7 +73,7 @@ async function applyStarboardMessage(message, subtract = false) {
 
 			if (reactionCount === 0) {
 				// No reactions, delete the message
-				await starMsg.delete(1000);
+				await starMsg.delete({timeout: 1000});
 			} else {
 				await starMsg.edit({ embed });
 			}
@@ -93,15 +93,21 @@ const add = async (reaction, user) => {
 	if (reaction.emoji.name !== starEmoji) {
 		return;
 	}
+	const starChannel = message.guild.channels.cache.find(channel => channel.name.toLowerCase().indexOf('starboard') !== -1); // temporary fix
+	if (starChannel && reaction.message.channel.id === starChannel.id) {
+		return;
+	}
 
 	// Sanity checks
 	if (message.author.id === user.id) {
-		await reaction.remove(user); // Remove their star
+		await reaction.users.remove(user); // Remove their star
+		// add timer
 		return message.channel.send(`${user}, you cannot star your own messages.`);
 	}
 
 	if (message.author.bot) {
-		await reaction.remove(user);
+		await reaction.users.remove(user);
+		// add timer
 		return message.channel.send(`${user}, you cannot star bot messages.`);
 	}
 
