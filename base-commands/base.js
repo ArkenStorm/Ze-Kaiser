@@ -253,7 +253,7 @@ const gitPull = (receivedMessage) => {
 			if (error) {
 				return sendError(receivedMessage, error);
 			}
-			return receivedMessage.react('👍');
+			return receivedMessage.react(client.emojis.cache.get('450333959042367490'));
 		});
 }
 
