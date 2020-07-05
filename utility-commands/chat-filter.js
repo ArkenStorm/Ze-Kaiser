@@ -25,7 +25,7 @@ const filter = (receivedMessage) => {
 			}
 			else {
 				config.administrators.forEach(userID => {
-					client.fetchUser(userID).then((user) => {
+					client.users.fetch(userID).then((user) => {
 						user.send(modMessage);
 					});
 				});
