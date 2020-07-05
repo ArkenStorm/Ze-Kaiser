@@ -2,7 +2,7 @@ const base = require('../base-commands/base');
 const config = require('../config.json');
 
 // I promise this is for a good cause!
-const vulgarity = ['damn', 'shit', 'fuck', 'bitch', 'cunt', 'nigger'];
+const vulgarity = ['damn', 'shit', 'fuck', 'bitch', 'cunt', 'nigger', 'bastard'];
 
 const filter = (receivedMessage) => {
 	if (!receivedMessage.guild) {

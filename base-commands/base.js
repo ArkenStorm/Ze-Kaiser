@@ -248,6 +248,9 @@ const roles = (receivedMessage) => {
 }
 
 const gitPull = (receivedMessage) => {
+	if (!config.administrators.includes(receivedMessage.author.id)) {
+		return;
+	}
 	receivedMessage.react('👍');
 	exec(`git pull && pm2 restart kaiser || curl -H "Content-Type: application/json" -X POST -d '{"username": "Kaiser-Updater", "content": "Automatic update failed. Manual intervention required."}' https://discordapp.com/api/webhooks/729058198417440870/j4M63rmD8G233Dz09WdWX8UeoZmQRC3QRs_HV5f6MQe-gWE0CeZ0Wkb-XFsBNQ_UFsto`,
 		async (error, stdout, stderr) => {
