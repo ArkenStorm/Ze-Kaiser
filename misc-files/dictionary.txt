@@ -13457,8 +13457,6 @@ clyde
 clydebank
 clydesdale
 clypei
-cm
-cmg
 co
 coach
 coached
@@ -13555,7 +13553,6 @@ coccyx
 cochineal
 cochlea
 cochleae
-cock
 cockade
 cockades
 cockamamie
@@ -13594,7 +13591,6 @@ cockpit
 cockpits
 cockroach
 cockroaches
-cocks
 cockscomb
 cockscombs
 cocksure
