@@ -121,7 +121,7 @@ const processCommand = (receivedMessage) => {
 			case 'itsatrap':
 			case 'facepalm':
 			case 'ironic':
-				misc.meme(receivedMessage, primaryCommand, args);
+				misc.meme(receivedMessage, primaryCommand, args.join(' '));
 				break;
 			case 'addrole':
 				base.addRole(receivedMessage, args);
