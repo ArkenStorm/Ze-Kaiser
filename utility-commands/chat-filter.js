@@ -2,7 +2,7 @@ const base = require('../base-commands/base');
 const config = require('../config.json');
 
 // I promise this is for a good cause!
-const vulgarity = ['damn', 'shit', 'fuck', 'bitch', 'cunt', 'nigger', 'bastard'];
+const vulgarity = ['damn', 'shit', 'fuck', 'bitch', 'cunt', 'nigger', 'bastard', 'fakenaughtyword'];
 
 const filter = (receivedMessage) => {
 	if (!receivedMessage.guild) {
@@ -14,7 +14,7 @@ const filter = (receivedMessage) => {
 			receivedMessage.delete().catch((err) => {
 				base.sendError(receivedMessage, err);
 			});
-			receivedMessage.channel.send({
+			receivedMessage.channel.send(`Tsk tsk, ${receivedMessage.author}`, {
 				files: ['./misc-files/christian-server.jpg']
 			}).catch((err) => {
 				base.sendError(receivedMessage, err);

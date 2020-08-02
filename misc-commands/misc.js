@@ -4,71 +4,37 @@ const fs = require("fs");
 const tmp = require('tmp-promise');
 const base = require('../base-commands/base');
 const config = require('../config.json');
+const memeMap = require('../misc-files/memeMap');
 
 tmp.setGracefulCleanup();
 
 let smited = new Set();
 let ignoredChannels = new Set();
 
-const meme = (receivedMessage, command) => {
-	let file;
-	let caption = '';
-	switch(command) {
-		case 'cooldudes':
-			caption = 'Oh no!'
-			file = './misc-files/taking-over.jpg';
-			break;
-		case 'bamboozled':
-			file = './misc-files/bamboozled.jpg';
-			break;
-		case 'illegal':
-			file = './misc-files/waitthatsillegal.jpg';
-			break;
-		case 'ontopic':
-			file = './misc-files/ontarget.gif';
-			break;
-		case 'bigbean':
-			file = './misc-files/big_bean_time.png';
-			break;
-		case 'bigbrain':
-			file = './misc-files/big_brain_time.jpg';
-			break;
-		case 'kronk':
-		case 'comingtogether':
-			file = './misc-files/coming_together.png';
-			break;
-		case 'dewit':
-		case 'doit':
-			file = './misc-files/dewit.gif';
-			break;
-		case 'thoughtpolice':
-		case 'enjoythings':
-			file = './misc-files/enjoy_things.png';
-			break;
-		default:
-			caption = 'How did you do this?';
-			file = './misc-files/is_that_legal.gif';
-			break;
+const meme = (receivedMessage, command, caption) => {
+	if (!memeMap[command]) {
+		receivedMessage.channel.send('How did you do this?', {
+			files: ['./misc-files/is_that_legal.gif']
+		}).catch((err) => {
+			base.sendError(receivedMessage, err);
+		});
+	}
+	else {
+		receivedMessage.channel.send((caption || memeMap[command].caption), {
+			files: [memeMap[command].file]
+		}).catch((err) => {
+			base.sendError(receivedMessage, err);
+		});
 	}
 
-	receivedMessage.channel.send(caption, {
-		files: [file]
-	}).catch((err) => {
-		base.sendError(receivedMessage, err);
-	});
 	receivedMessage.delete().catch((err) => {
 		base.sendError(receivedMessage, err);
 	});
 }
 
 const autoReact = (messageReaction) => {
-	if (messageReaction.me || messageReaction.message.author == client.user) {
-		return;
-	}
-	if (messageReaction.message.reactions.length > 1) {
-		return;
-	}
-	if (messageReaction.emoji.name === config.starEmoji) {
+	if (messageReaction.me || messageReaction.message.author == client.user ||
+		messageReaction.count > 1 || messageReaction.emoji.name === config.starEmoji) {
 		return;
 	}
 	if (messageReaction.emoji.name.toLowerCase() === 'same' || messageReaction.emoji.name.toLowerCase() === 'no_u' || messageReaction.emoji.name.toLowerCase() === 'nou') {

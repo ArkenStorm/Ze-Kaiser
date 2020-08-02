@@ -197,31 +197,40 @@ const removeRoles = (receivedMessage, roles) => {
 }
 
 const info = (receivedMessage, channel) => {
-	if (!channel) {
+	const mentionedChannel = receivedMessage.mentions.channels.first()
+	if (!channel || !mentionedChannel) {
 		receivedMessage.channel.send('I can\'t give information about nothing!');
 		return;
 	}
-	channel = channel.join();
 
-	const zeChannel = receivedMessage.guild.channels.cache.find(zeChannel => zeChannel.name === channel );
-	if (!zeChannel) {
-		receivedMessage.channel.send('Channel not found. You must type the channel name exactly as it appears in the list, including dashes.');
-		return;
-	}
-	if (zeChannel.type == 'text') {
-		receivedMessage.channel.send(`${zeChannel.name}: ${zeChannel.topic}`).catch((err) => {
+	if (mentionedChannel) {
+		receivedMessage.channel.send(`${mentionedChannel.name}: ${mentionedChannel.topic}`).catch((err) => {
 			sendError(receivedMessage, err);
 		});
 	}
 	else {
-		receivedMessage.channel.send('Invalid channel type.');
+		channel = channel.join();
+
+		const zeChannel = receivedMessage.guild.channels.cache.find(zeChannel => zeChannel.name === channel );
+		if (!zeChannel) {
+			receivedMessage.channel.send('Channel not found. You must type the channel name exactly as it appears in the list, including dashes.');
+			return;
+		}
+		if (zeChannel.type == 'text') {
+			receivedMessage.channel.send(`${zeChannel.name}: ${zeChannel.topic}`).catch((err) => {
+				sendError(receivedMessage, err);
+			});
+		}
+		else {
+			receivedMessage.channel.send('Invalid channel type.');
+		}
 	}
 }
 
 const help = (receivedMessage) => {
 	let allCommands = require('./help.json');
 
-	const helpEmbed = new Discord.MessageEmbed().setColor('#2295d4');
+	let helpEmbed = new Discord.MessageEmbed().setColor('#2295d4');
 	Object.keys(allCommands).forEach(command => {
 		const currentCommand = allCommands[command];
 		helpEmbed.addField(currentCommand.title, currentCommand.description);
@@ -231,8 +240,8 @@ const help = (receivedMessage) => {
 
 const roles = (receivedMessage) => {
 	let botHighestRole = receivedMessage.guild.me.roles.highest;
-	const roleEmbed = new Discord.MessageEmbed().setColor('#2295d4');
-	const eligibleRoles = [];
+	let roleEmbed = new Discord.MessageEmbed().setColor('#2295d4');
+	let eligibleRoles = [];
 	for (const [snowflake, role] of receivedMessage.guild.roles.cache) {
 		if (botHighestRole.comparePositionTo(role) > 0 && role.name != '@everyone' && role.editable && role.name.indexOf('complete') == -1) {
 			eligibleRoles.push(role.name);
