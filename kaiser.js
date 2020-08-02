@@ -114,7 +114,14 @@ const processCommand = (receivedMessage) => {
 			case 'doit':
 			case 'thoughtpolice':
 			case 'enjoythings':
-				misc.meme(receivedMessage, primaryCommand);
+			case 'gasp':
+			case 'whoknew':
+			case 'patience':
+			case 'whomst':
+			case 'itsatrap':
+			case 'facepalm':
+			case 'ironic':
+				misc.meme(receivedMessage, primaryCommand, args);
 				break;
 			case 'addrole':
 				base.addRole(receivedMessage, args);
