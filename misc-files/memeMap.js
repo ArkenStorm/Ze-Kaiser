@@ -51,7 +51,7 @@ const memeMap = {
 	},
 	'gasp': {
 		caption: '',
-		file: './misc_files/notsurprisedkirk.png'
+		file: './misc-files/notsurprisedkirk.png'
 	},
 	'whoknew': {
 		caption: '',
