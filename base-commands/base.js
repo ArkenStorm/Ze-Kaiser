@@ -290,7 +290,7 @@ const sendError = (receivedMessage, err) => {
 	});
 }
 
-const banish = async (receivedMessage, db, broadcast) => { 
+const banish = async (receivedMessage, db, banishmentsPerChannel, broadcast) => { 
 	// only admins can banish
 	if (!config.administrators.includes(receivedMessage.author.id)) {
 		receivedMessage.channel.send(receivedMessage.author, {
@@ -310,11 +310,28 @@ const banish = async (receivedMessage, db, broadcast) => {
 
 	// can't banish admins or Ze Kaiser
 	if (
-		whoToBanish.has(receivedMessage.client.user.id) ||
-		config.administrators.some(admin => whoToBanish.has(admin))
+		whoToBanish.has(receivedMessage.client.user.id)
 	) {
 		receivedMessage.channel.send("You fool. I am invincible!");
 		return;
+	}
+
+	if (config.administrators.some(admin => whoToBanish.has(admin))) {
+		receivedMessage.channel.send("That user would kill me if I smote them, so no.");
+		return;
+	}
+
+	const currentBanishments = banishmentsPerChannel.get(receivedMessage.channel.id);
+	// no double banishing
+	if (currentBanishments) {
+		for (const banishedUserId of currentBanishments) {
+			whoToBanish.delete(banishedUserId);
+		}
+
+		if (whoToBanish.size === 0) {
+			receivedMessage.channel.send("All those users have already been banished. Why do you wish to punish them further?");
+			return;
+		}
 	}
 
 	receivedMessage.delete();
@@ -328,9 +345,11 @@ const banish = async (receivedMessage, db, broadcast) => {
 	}
 	
 	await sqlite.banish(db, ids, channelId);
+	
+	return await sqlite.getChannelsAndBanishments(db);
 }
 
-const unbanish = (receivedMessage, db) => {
+const unbanish = async (receivedMessage, db) => {
 	if (!config.administrators.includes(receivedMessage.author.id)) {
 		receivedMessage.channel.send(receivedMessage.author, {
 			files: ['./misc-files/no-power.gif']
@@ -351,9 +370,10 @@ const unbanish = (receivedMessage, db) => {
 	const channelId = receivedMessage.channel.id;
 	const ids = Array.from(whoToUnbanish.keys());
 
-	sqlite.unbanish(db, ids, channelId);
+	await sqlite.unbanish(db, ids, channelId);
 
 	receivedMessage.channel.send("You may return, " + Array.from(whoToUnbanish.values()).join(" "));
+	return await sqlite.getChannelsAndBanishments(db);
 }
 
 module.exports = {

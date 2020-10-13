@@ -195,15 +195,13 @@ sqlite.startDatabase("./db.sqlite").then(async (db) => {
 					base.gitPull(receivedMessage);
 					break;
 				case 'banish':
-					base.banish(receivedMessage, db, true);
+					banishmentsPerChannel = base.banish(receivedMessage, db, banishmentsPerChannel, true);
 					break;
 				case 'shadowban':
-					await base.banish(receivedMessage, db, false);
-					banishmentsPerChannel = await sqlite.getChannelsAndBanishments(db);
+					banishmentsPerChannel = await base.banish(receivedMessage, db, banishmentsPerChannel, false);
 					break;
 				case 'unbanish':
-					await base.unbanish(receivedMessage, db, banishmentsPerChannel);
-					banishmentsPerChannel = await sqlite.getChannelsAndBanishments(db);
+					banishmentsPerChannel = await base.unbanish(receivedMessage, db);
 					break;
 				default:
 					receivedMessage.channel.send('Invalid command.');
