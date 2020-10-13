@@ -8,7 +8,7 @@ const starboard = require('./misc-commands/starboard');
 const hangman = require('./misc-commands/hangman');
 const config = require('./config.json');
 const filter = require('./utility-commands/chat-filter');
-const sqlite = require('./database/sqlite');
+const sqlite = require('./database/sqlite/sqlite');
 
 var messageBeingProcessed;
 
