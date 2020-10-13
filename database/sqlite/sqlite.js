@@ -14,19 +14,20 @@ const startDatabase = async (path) => {
 
 	let currentSchemaVersion = 0;
 	try {
-		const result = await get(
+		const result = await getSingleRow(
 			db,
 			'SELECT version_number from schema_version'
 		);
 		currentSchemaVersion = result.version_number;
 	} catch (err) {
-		// just leave schema version at 0
+		// schema version at 0
 	}
 
 	const latestSchemaVersion =
 		schemaUpdates[schemaUpdates.length - 1].updateNumber;
 	if (currentSchemaVersion !== latestSchemaVersion) {
-		await runMigrations(db, schemaUpdates);
+		runMigrations(db, schemaUpdates, currentSchemaVersion, latestSchemaVersion);
+
 		console.log(
 			`Updated schema from version ${currentSchemaVersion} to version ${latestSchemaVersion}`
 		);
@@ -37,53 +38,60 @@ const startDatabase = async (path) => {
 	return db;
 };
 
-/**
- * Gets a single row
- * https://www.npmjs.com/package/sqlite#getting-a-single-row
- */
-const get = (connection, query, ...params) => {
+const checkParams = (query, params) => {
 	const expectedParamCount = (/\?/.exec(query) || []).length;
 	if (expectedParamCount !== params.length) {
 		throw new Error(
 			`Invalid number of arguments for get query. Must have ${expectedParamCount}, received ${params.length}`
 		);
 	}
+};
+
+const getSingleRow = (connection, query, ...params) => {
+	checkParams(query, params);
 	return connection.get(query, params);
+};
+
+const run = (connection, query, ...params) => {
+	checkParams(query, params);
+	return connection.run(query, params);
 };
 
 const runMigrations = (
 	connection,
 	updates,
-	currentVersionNumber,
-	latestVersionNumber
+	currentSchemaVersion,
+	latestSchemaVersion
 ) => {
-	const indexOfMigrationToStartOn = updates.findIndex(el => el.updateNumber > currentVersionNumber);
+	const indexOfMigrationToStartOn = updates.findIndex(
+		(el) => el.updateNumber > currentSchemaVersion
+	);
 	if (indexOfMigrationToStartOn === -1) {
 		// on the most recent version
-		return Promise.resolve();
+		return;
 	}
 	const updatesToRun = updates.slice(indexOfMigrationToStartOn);
 
 	// Generally a bad idea, since we lose the nice promise wrapping, but serialize() isn't supported yet
 	// https://github.com/kriasoft/node-sqlite/blob/master/docs/classes/_src_database_.database.md#serialize
 	const rawDb = connection.getDatabaseInstance();
-	return new Promise((resolve) => {
-		// We want all schema updates to run in order and synchronously
-		rawDb.serialize(() => {
-			updatesToRun.forEach((m) => {
-				console.log(`Running schema update number ${m.updateNumber}`);
-				rawDb.run(m.query);
-			});
-			// Save the latest version
-			rawDb.run(
-				'UPDATE schema_version SET version_number = ?, last_updated = ? WHERE version_number = ?',
-				[latestVersionNumber, Date.now(), currentVersionNumber]
-			);
-			resolve();
-		});
+	// We want all schema updates to run in order and synchronously
+	rawDb.serialize();
+
+	updatesToRun.forEach((m) => {
+		rawDb.run(m.query);
 	});
+	rawDb.run('DELETE FROM schema_version');
+	// Save the latest version
+	rawDb.run(
+		'INSERT INTO schema_version(version_number) VALUES(?)',
+		latestSchemaVersion
+	);
+	// go back to parallel
+	rawDb.parallelize();
 };
 
 module.exports = {
 	startDatabase,
+	checkParams,
 };
