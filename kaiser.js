@@ -40,14 +40,15 @@ sqlite.startDatabase("./db.sqlite").then(async (db) => {
 			return;
 		}
 
+		if (receivedMessage.guild === null) {
+			return;
+		}
+
 		if (
 			banishmentsPerChannel.has(receivedMessage.channel.id) &&
 			banishmentsPerChannel.get(receivedMessage.channel.id)
 		) {
 			receivedMessage.delete();
-		}
-	
-		if (receivedMessage.guild === null) {
 			return;
 		}
 	
