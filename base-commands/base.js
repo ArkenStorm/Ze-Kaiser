@@ -1,5 +1,6 @@
 const config = require('../config.json');
 const { exec } = require('child_process');
+const sqlite = require("../database/sqlite");
 
 const complete = (receivedMessage, args) => {
 	let roles = args.join(' ').split(',').map(x => x.trim());
@@ -289,6 +290,72 @@ const sendError = (receivedMessage, err) => {
 	});
 }
 
+const banish = async (receivedMessage, db, broadcast) => { 
+	// only admins can banish
+	if (!config.administrators.includes(receivedMessage.author.id)) {
+		receivedMessage.channel.send(receivedMessage.author, {
+			files: ['./misc-files/no-power.gif']
+		});
+		return;
+	}
+	const whoToBanish = receivedMessage.mentions.users;
+
+	if (whoToBanish.size === 0) {
+		receivedMessage.react("🇼");
+		receivedMessage.react("🇭");
+		receivedMessage.react("🇴");
+		receivedMessage.react("❓");
+		return;
+	}
+
+	// can't banish admins or Ze Kaiser
+	if (
+		whoToBanish.has(receivedMessage.client.user.id) ||
+		config.administrators.some(admin => whoToBanish.has(admin))
+	) {
+		receivedMessage.channel.send("You fool. I am invincible!");
+		return;
+	}
+
+	receivedMessage.delete();
+
+	const channelId = receivedMessage.channel.id;
+	const names = Array.from(whoToBanish.values()).map(u => u.tag);
+	const ids = Array.from(whoToBanish.keys());
+	console.log(`Banishing ${names.join(", ")} from channel #${receivedMessage.channel.name}`);
+	if (broadcast) {
+		receivedMessage.channel.send("Begone " + Array.from(whoToBanish.values()).join(" "));
+	}
+	
+	await sqlite.banish(db, ids, channelId);
+}
+
+const unbanish = (receivedMessage, db) => {
+	if (!config.administrators.includes(receivedMessage.author.id)) {
+		receivedMessage.channel.send(receivedMessage.author, {
+			files: ['./misc-files/no-power.gif']
+		});
+		return;
+	}
+
+	const whoToUnbanish = receivedMessage.mentions.users;
+
+	if (whoToUnbanish.size === 0) {
+		receivedMessage.react("🇼");
+		receivedMessage.react("🇭");
+		receivedMessage.react("🇴");
+		receivedMessage.react("❓");
+		return;
+	}
+	
+	const channelId = receivedMessage.channel.id;
+	const ids = Array.from(whoToUnbanish.keys());
+
+	sqlite.unbanish(db, ids, channelId);
+
+	receivedMessage.channel.send("You may return, " + Array.from(whoToUnbanish.values()).join(" "));
+}
+
 module.exports = {
 	complete,
 	addRole,
@@ -299,5 +366,7 @@ module.exports = {
 	help,
 	roles,
 	gitPull,
-	sendError
+	sendError,
+	banish,
+	unbanish
 };

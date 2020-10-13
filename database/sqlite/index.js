@@ -1,4 +1,4 @@
 const { startDatabase } = require('./sqlite');
-const { banish } = require('./banishment');
+const { banish, unbanish, getChannelsAndBanishments } = require('./banishment');
 
-module.exports = { startDatabase, banish };
+module.exports = { startDatabase, banish, unbanish, getChannelsAndBanishments };

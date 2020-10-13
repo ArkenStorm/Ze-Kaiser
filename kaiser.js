@@ -12,7 +12,9 @@ const sqlite = require('./database/sqlite');
 
 var messageBeingProcessed;
 
-sqlite.startDatabase("./db.sqlite").then((dbConnection) => {
+sqlite.startDatabase("./db.sqlite").then(async (db) => {
+	const banishmentsPerChannel = await sqlite.getChannelsAndBanishments(db);
+
 	client.on('ready', () => {
 		console.log('Connected as ' + client.user.tag);
 	});
@@ -36,6 +38,13 @@ sqlite.startDatabase("./db.sqlite").then((dbConnection) => {
 		}
 		if (receivedMessage.author === client.user || misc.smited.has(receivedMessage.author)) {   //Make sure the bot doesn't respond to itself, otherwise weird loopage may occur
 			return;
+		}
+
+		if (
+			banishmentsPerChannel.has(receivedMessage.channel.id) &&
+			banishmentsPerChannel.get(receivedMessage.channel.id)
+		) {
+			receivedMessage.delete();
 		}
 	
 		if (receivedMessage.guild === null) {
@@ -183,6 +192,15 @@ sqlite.startDatabase("./db.sqlite").then((dbConnection) => {
 				case 'pull':
 				case 'gitpull':
 					base.gitPull(receivedMessage);
+					break;
+				case 'banish':
+					base.banish(receivedMessage, db, true);
+					break;
+				case 'shadowban':
+					base.banish(receivedMessage, db, false);
+					break;
+				case 'unbanish':
+					base.unbanish(receivedMessage, db)
 					break;
 				default:
 					receivedMessage.channel.send('Invalid command.');

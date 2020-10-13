@@ -49,12 +49,17 @@ const checkParams = (query, params) => {
 
 const getSingleRow = (connection, query, ...params) => {
 	checkParams(query, params);
-	return connection.get(query, params);
+	return connection.get(query, ...params);
+};
+
+const getAllRows = (connection, query, ...params) => {
+	checkParams(query, params);
+	return connection.all(query, ...params);
 };
 
 const run = (connection, query, ...params) => {
 	checkParams(query, params);
-	return connection.run(query, params);
+	return connection.run(query, ...params);
 };
 
 const runMigrations = (
@@ -93,5 +98,7 @@ const runMigrations = (
 
 module.exports = {
 	startDatabase,
-	checkParams,
+	run,
+	getSingleRow,
+	getAllRows,
 };

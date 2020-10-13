@@ -12,6 +12,13 @@ const schemaUpdates = [
             version_number INTEGER, 
          );`,
 	},
+	{
+		updateNumber: 2,
+		query: `CREATE TABLE banishments(
+            channel_id TEXT NOT NULL,
+            user_id TEXT NOT NULL
+        );`,
+	},
 ];
 
 module.exports = {
