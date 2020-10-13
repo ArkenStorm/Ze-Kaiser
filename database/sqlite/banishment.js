@@ -8,7 +8,6 @@ const banish = (db, userIdsToBanish, channelId) => {
 	if (!Array.isArray(userIdsToBanish)) {
 		toBanish = [userIdsToBanish];
 	}
-	console.log(toBanish);
 	return Promise.all(
 		toBanish.map((id) =>
 			run(db, 'INSERT INTO banishments(channel_id, user_id) VALUES (?, ?)', [
@@ -24,7 +23,6 @@ const unbanish = (db, userIdsToUnbanish, channelId) => {
 	if (!Array.isArray(userIdsToUnbanish)) {
 		toUnbanish = [userIdsToUnbanish];
 	}
-	console.log('Unbanishing', toUnbanish);
 	return Promise.all(
 		toUnbanish.map((id) =>
 			run(db, 'DELETE FROM banishments WHERE channel_id = ? AND user_id = ?', [
