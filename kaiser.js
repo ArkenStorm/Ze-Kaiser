@@ -46,7 +46,7 @@ sqlite.startDatabase("./db.sqlite").then(async (db) => {
 
 		if (
 			banishmentsPerChannel.has(receivedMessage.channel.id) &&
-			banishmentsPerChannel.get(receivedMessage.channel.id)
+			banishmentsPerChannel.get(receivedMessage.channel.id).has(receivedMessage.author.id)
 		) {
 			receivedMessage.delete();
 			return;
