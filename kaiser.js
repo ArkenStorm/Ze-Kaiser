@@ -13,7 +13,7 @@ const sqlite = require('./database/sqlite');
 var messageBeingProcessed;
 
 sqlite.startDatabase("./db.sqlite").then(async (db) => {
-	const banishmentsPerChannel = await sqlite.getChannelsAndBanishments(db);
+	let banishmentsPerChannel = await sqlite.getChannelsAndBanishments(db);
 
 	client.on('ready', () => {
 		console.log('Connected as ' + client.user.tag);
@@ -32,7 +32,7 @@ sqlite.startDatabase("./db.sqlite").then(async (db) => {
 		}
 	}, 10000);
 	
-	client.on('message', (receivedMessage) => {
+	client.on('message', async (receivedMessage) => {
 		if (receivedMessage.author !== client.user && !filter.filter(receivedMessage)) {
 			return;
 		}
@@ -53,7 +53,7 @@ sqlite.startDatabase("./db.sqlite").then(async (db) => {
 	
 		if (receivedMessage.content.startsWith('!')) {
 			messageBeingProcessed = receivedMessage;
-			processCommand(receivedMessage);
+			await processCommand(receivedMessage);
 		}
 		else if (receivedMessage.mentions.has(client.user)) {
 			const why = client.emojis.cache.get('612697675996856362');
@@ -100,7 +100,7 @@ sqlite.startDatabase("./db.sqlite").then(async (db) => {
 		starboard.subtract(reaction, user);
 	});
 	
-	const processCommand = (receivedMessage) => {
+	const processCommand = async (receivedMessage) => {
 		try {
 			let fullCommand = receivedMessage.content.substr(1) // Remove the leading character
 			let splitCommand = fullCommand.split(" ") // Split the message up in to pieces for each space
@@ -197,10 +197,12 @@ sqlite.startDatabase("./db.sqlite").then(async (db) => {
 					base.banish(receivedMessage, db, true);
 					break;
 				case 'shadowban':
-					base.banish(receivedMessage, db, false);
+					await base.banish(receivedMessage, db, false);
+					banishmentsPerChannel = await sqlite.getChannelsAndBanishments(db);
 					break;
 				case 'unbanish':
-					base.unbanish(receivedMessage, db)
+					await base.unbanish(receivedMessage, db, banishmentsPerChannel);
+					banishmentsPerChannel = await sqlite.getChannelsAndBanishments(db);
 					break;
 				default:
 					receivedMessage.channel.send('Invalid command.');
