@@ -290,7 +290,7 @@ const sendError = (receivedMessage, err) => {
 	});
 }
 
-const banish = async (receivedMessage, db, banishmentsPerChannel, broadcast) => { 
+const banish = async (receivedMessage, db, broadcast) => { 
 	// only admins can banish
 	if (!config.administrators.includes(receivedMessage.author.id)) {
 		receivedMessage.channel.send(receivedMessage.author, {
@@ -321,6 +321,7 @@ const banish = async (receivedMessage, db, banishmentsPerChannel, broadcast) => 
 		return;
 	}
 
+	const banishmentsPerChannel = await sqlite.getChannelsAndBanishments(db);
 	const currentBanishments = banishmentsPerChannel.get(receivedMessage.channel.id);
 	// no double banishing
 	if (currentBanishments) {
@@ -371,9 +372,8 @@ const unbanish = async (receivedMessage, db) => {
 	const ids = Array.from(whoToUnbanish.keys());
 
 	await sqlite.unbanish(db, ids, channelId);
-
+	
 	receivedMessage.channel.send("You may return, " + Array.from(whoToUnbanish.values()).join(" "));
-	return await sqlite.getChannelsAndBanishments(db);
 }
 
 module.exports = {

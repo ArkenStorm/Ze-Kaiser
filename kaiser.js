@@ -13,8 +13,6 @@ const sqlite = require('./database/sqlite');
 var messageBeingProcessed;
 
 sqlite.startDatabase("./db.sqlite").then(async (db) => {
-	let banishmentsPerChannel = await sqlite.getChannelsAndBanishments(db);
-
 	client.on('ready', () => {
 		console.log('Connected as ' + client.user.tag);
 	});
@@ -43,6 +41,8 @@ sqlite.startDatabase("./db.sqlite").then(async (db) => {
 		if (receivedMessage.guild === null) {
 			return;
 		}
+
+		const banishmentsPerChannel = await sqlite.getChannelsAndBanishments(db);
 
 		if (
 			banishmentsPerChannel.has(receivedMessage.channel.id) &&
@@ -101,7 +101,7 @@ sqlite.startDatabase("./db.sqlite").then(async (db) => {
 		starboard.subtract(reaction, user);
 	});
 	
-	const processCommand = async (receivedMessage) => {
+	const processCommand = (receivedMessage) => {
 		try {
 			let fullCommand = receivedMessage.content.substr(1) // Remove the leading character
 			let splitCommand = fullCommand.split(" ") // Split the message up in to pieces for each space
@@ -195,13 +195,13 @@ sqlite.startDatabase("./db.sqlite").then(async (db) => {
 					base.gitPull(receivedMessage);
 					break;
 				case 'banish':
-					banishmentsPerChannel = base.banish(receivedMessage, db, banishmentsPerChannel, true);
+					base.banish(receivedMessage, db, true);
 					break;
 				case 'shadowban':
-					banishmentsPerChannel = await base.banish(receivedMessage, db, banishmentsPerChannel, false);
+					base.banish(receivedMessage, db, false);
 					break;
 				case 'unbanish':
-					banishmentsPerChannel = await base.unbanish(receivedMessage, db);
+					base.unbanish(receivedMessage, db);
 					break;
 				default:
 					receivedMessage.channel.send('Invalid command.');
