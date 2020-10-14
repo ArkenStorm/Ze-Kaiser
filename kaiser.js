@@ -218,10 +218,14 @@ sqlite.startDatabase("./db.sqlite").then(async (db) => {
 
 // LAST DITCH ERROR HANDLING; Is technically deprecated, care for future
 process.on("unhandledRejection", (err) => {
-	base.sendError(messageBeingProcessed, err);
+	if (client.uptime > 0) {
+		base.sendError(messageBeingProcessed, err);
+	}
 	messageBeingProcessed = undefined;
 });
 process.on("uncaughtException", (err) => {
-	base.sendError(messageBeingProcessed, err);
+	if (client.uptime > 0) {
+		base.sendError(messageBeingProcessed, err);
+	}
 	messageBeingProcessed = undefined;
 });

@@ -1,5 +1,6 @@
 const { Database } = require('sqlite3');
 const sqlite = require('sqlite');
+// const process = require('process');
 const { schemaUpdates: schemaUpdatesUnsorted } = require('./schemaUpdates');
 const schemaUpdates = schemaUpdatesUnsorted.sort(
 	(a, b) => a.updateNumber - b.updateNumber
@@ -82,15 +83,25 @@ const runMigrations = (
 	const rawDb = connection.getDatabaseInstance();
 	// We want all schema updates to run in order and synchronously
 	rawDb.serialize();
-
+	const errFunc = (query) => (err) => {
+		if (!err) {
+			return;
+		}
+		console.error(`Failed to run migration with query\n${query}\n`, err);
+		process.exit(1);
+	};
 	updatesToRun.forEach((m) => {
-		rawDb.run(m.query);
+		rawDb.run(m.query, errFunc(m.query));
 	});
-	rawDb.run('DELETE FROM schema_version');
+	rawDb.run(
+		'DELETE FROM schema_version',
+		errFunc('DELETE FROM schema_version')
+	);
 	// Save the latest version
 	rawDb.run(
 		'INSERT INTO schema_version(version_number) VALUES(?)',
-		latestSchemaVersion
+		latestSchemaVersion,
+		errFunc('INSERT INTO schema_version(version_number) VALUES(?)')
 	);
 	// go back to parallel
 	rawDb.parallelize();
