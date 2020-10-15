@@ -345,12 +345,21 @@ const xkcdsearch = async (receivedMessage, args) => {
 		receivedMessage.channel.send("No results");
 		return;
 	}
-	const results = ((response.data || "").split("mw-search-results") || [])[1];
-	if (!results) {
+	let selector;
+	if (/mw-search-results/.test(response.data)) {
+		// direct comic page
+		selector = "mw-search-results";
+	} else {
+		// search results page
+		selector = `<h1 id="firstHeading" class="firstHeading" lang="en">`;
+	}
+	const htmlToSearch = (response.data.split(selector) || [])[1];
+	console.log(response.data);
+	if (!htmlToSearch) {
 		receivedMessage.channel.send("No (usable) results");
 		return;
 	}
-	const num = (results.match(/\d+(?=:)/) || [])[0];
+	const num = (htmlToSearch.match(/\d+(?=:)/) || [])[0];
 	if (!num) {
 		receivedMessage.channel.send("No (usable) results");
 		return;
