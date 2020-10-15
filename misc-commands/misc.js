@@ -345,9 +345,12 @@ const xkcdsearch = async (receivedMessage, args) => {
 		receivedMessage.channel.send("No results");
 		return;
 	}
-	const results = response.data.split("mw-search-results")[1];
-	const num = (results.match(/\d+/) || [])[0];
-	console.log(num);
+	const results = ((response.data || "").split("mw-search-results") || [])[1];
+	if (!results) {
+		receivedMessage.channel.send("No (usable) results");
+		return;
+	}
+	const num = (results.match(/\d+(?=:)/) || [])[0];
 	if (!num) {
 		receivedMessage.channel.send("No (usable) results");
 		return;
