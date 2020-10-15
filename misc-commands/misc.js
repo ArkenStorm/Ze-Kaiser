@@ -312,8 +312,7 @@ const xkcd = async (receivedMessage, args) => {
 		const latest = await getXkcdComicInfo("");
 		num = Math.floor(Math.random() * (latest.num + 1));
 	} else {
-		receivedMessage.channel.send(`"${requestedComic}" isn't a number or "random".`);
-		return;
+		return xkcdsearch(receivedMessage, args);
 	}
 	if (parseInt(num) === 404) {
 		receivedMessage.channel.send("Error 404: comic not found");
@@ -321,6 +320,49 @@ const xkcd = async (receivedMessage, args) => {
 	}
 	const comic = await getXkcdComicInfo(num);
 
+	const comicEmbed = new Discord.MessageEmbed()
+		.setColor('#1A73E8')
+		.setTitle(`xkcd #${num}: ${comic.title}`)
+		.setImage(comic.img)
+		.setURL(`https://xkcd.com/${num}`)
+		.setFooter(comic.alt);
+	receivedMessage.channel.send(comicEmbed);
+}
+
+const xkcdsearch = async (receivedMessage, args) => {
+	const terms = args.join(" ");
+	if (!terms) {
+		receivedMessage.channel.send(`You forgot a search term.`);
+		return;
+	}
+	const response = await axios.request({
+		method: "get",
+		url: "https://www.explainxkcd.com/wiki/api.php",
+		params: {
+			action: "query",
+			list: "search",
+			format: "json",
+			srsearch: terms,
+			origin: "*",
+			srlimit: 1
+		}
+	});
+	if (response.status !== 200) {
+		// send error
+		base.sendError(receivedMessage, `Failed to search explainxkcd.com for ${terms} #${num}\n${response.status}: ${response.statusText}`)
+		return;
+	}
+	if (response.data.query.searchinfo.totalhits === 0) {
+		receivedMessage.channel.send("No results");
+		return;
+	}
+	const title = response.data.query.search[0].title;
+	const num = /^\d+/.exec(title);
+	if (!num) {
+		receivedMessage.channel.send("No (usable) results");
+		return;
+	}
+	const comic = await getXkcdComicInfo(parseInt(num[0]));
 	const comicEmbed = new Discord.MessageEmbed()
 		.setColor('#1A73E8')
 		.setTitle(`xkcd #${num}: ${comic.title}`)
@@ -342,5 +384,6 @@ module.exports = {
 	startListening,
 	stopListening,
 	ignoredChannels,
-	xkcd
+	xkcd,
+	xkcdsearch
 };
