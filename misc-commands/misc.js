@@ -300,7 +300,6 @@ const xkcd = async (receivedMessage, args) => {
 	if (!requestedComic) {
 		// no input
 	}
-	receivedMessage.delete();
 	let num;
 	if (!requestedComic) {
 		// latest. It works
@@ -314,6 +313,7 @@ const xkcd = async (receivedMessage, args) => {
 	} else {
 		return xkcdsearch(receivedMessage, args);
 	}
+	receivedMessage.delete();
 	if (parseInt(num) === 404) {
 		receivedMessage.channel.send("Error 404: comic not found");
 		return;
