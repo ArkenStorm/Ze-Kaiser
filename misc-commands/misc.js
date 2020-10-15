@@ -285,6 +285,51 @@ const stopListening = (receivedMessage, timeout = 0) => {
 	}
 }
 
+const getXkcdComicInfo = async (num) => {
+	const response = await axios.get(`https://xkcd.com/${num}/info.0.json`);
+		if (response.status !== 200) {
+			// send error
+			base.sendError(receivedMessage, `Failed to get comic #${num}\n${response.status}: ${response.statusText}`)
+			return;
+		}
+		return response.data;
+}
+
+const xkcd = async (receivedMessage, args) => {
+	const requestedComic = (args[0] || "").trim();
+	if (!requestedComic) {
+		// no input
+	}
+	receivedMessage.delete();
+	let num;
+	if (!requestedComic) {
+		// latest. It works
+		num = "";
+	}
+	else if (/^\d+$/.test(requestedComic)) {
+		num = requestedComic;
+	} else if (requestedComic === "random") {
+		const latest = await getXkcdComicInfo("");
+		num = Math.floor(Math.random() * (latest.num + 1));
+	} else {
+		receivedMessage.channel.send(`"${requestedComic}" isn't a number or "random".`);
+		return;
+	}
+	if (parseInt(num) === 404) {
+		receivedMessage.channel.send("Error 404: comic not found");
+		return;
+	}
+	const comic = await getXkcdComicInfo(num);
+
+	const comicEmbed = new Discord.MessageEmbed()
+		.setColor('#1A73E8')
+		.setTitle(`xkcd #${num}: ${comic.title}`)
+		.setImage(comic.img)
+		.setURL(`https://xkcd.com/${num}`)
+		.setFooter(comic.alt);
+	receivedMessage.channel.send(comicEmbed);
+}
+
 module.exports = {
 	meme,
 	autoReact,
@@ -296,5 +341,6 @@ module.exports = {
 	vidtogif,
 	startListening,
 	stopListening,
-	ignoredChannels
+	ignoredChannels,
+	xkcd
 };
