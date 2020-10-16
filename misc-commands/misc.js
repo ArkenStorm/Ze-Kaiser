@@ -351,7 +351,6 @@ const xkcdsearch = async (receivedMessage, args) => {
 		selector = `<h1 id="firstHeading" class="firstHeading" lang="en">`;
 	}
 	const htmlToSearch = (response.data.split(selector) || [])[1];
-	console.log(response.data);
 	if (!htmlToSearch) {
 		receivedMessage.channel.send("No (usable) results");
 		return;
