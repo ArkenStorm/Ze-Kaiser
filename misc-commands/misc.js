@@ -297,9 +297,6 @@ const getXkcdComicInfo = async (num) => {
 
 const xkcd = async (receivedMessage, args) => {
 	const requestedComic = (args[0] || "").trim();
-	if (!requestedComic) {
-		// no input
-	}
 	let num;
 	if (!requestedComic) {
 		// latest. It works
