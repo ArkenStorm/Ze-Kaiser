@@ -285,6 +285,91 @@ const stopListening = (receivedMessage, timeout = 0) => {
 	}
 }
 
+const getXkcdComicInfo = async (num) => {
+	const response = await axios.get(`https://xkcd.com/${num}/info.0.json`);
+		if (response.status !== 200) {
+			// send error
+			base.sendError(receivedMessage, `Failed to get comic #${num}\n${response.status}: ${response.statusText}`)
+			return;
+		}
+		return response.data;
+}
+
+const xkcd = async (receivedMessage, args) => {
+	const requestedComic = (args[0] || "").trim();
+	let num;
+	if (!requestedComic) {
+		// latest. It works
+		num = "";
+	}
+	else if (/^\d+$/.test(requestedComic)) {
+		num = requestedComic;
+	} else if (requestedComic === "random") {
+		const latest = await getXkcdComicInfo("");
+		num = Math.floor(Math.random() * (latest.num + 1));
+	} else {
+		return xkcdsearch(receivedMessage, args);
+	}
+	receivedMessage.delete();
+	if (parseInt(num) === 404) {
+		receivedMessage.channel.send("Error 404: comic not found");
+		return;
+	}
+	const comic = await getXkcdComicInfo(num);
+
+	const comicEmbed = new Discord.MessageEmbed()
+		.setColor('#1A73E8')
+		.setTitle(`xkcd #${num}: ${comic.title}`)
+		.setImage(comic.img)
+		.setURL(`https://xkcd.com/${num}`)
+		.setFooter(comic.alt);
+	receivedMessage.channel.send(comicEmbed);
+}
+
+const xkcdsearch = async (receivedMessage, args) => {
+	const terms = args.join("+");
+	if (!terms) {
+		receivedMessage.channel.send(`You forgot a search term.`);
+		return;
+	}
+	const response = await axios.get(`https://www.explainxkcd.com/wiki/index.php?search=${terms}&title=Special%3ASearch&go=Go`)
+	if (response.status !== 200) {
+		// send error
+		base.sendError(receivedMessage, `Failed to search explainxkcd.com for ${terms} #${num}\n${response.status}: ${response.statusText}`)
+		return;
+	}
+	if (/There were no results matching the query/.test(response.data)) {
+		receivedMessage.channel.send("No results");
+		return;
+	}
+	let selector;
+	if (/mw-search-results/.test(response.data)) {
+		// direct comic page
+		selector = "mw-search-results";
+	} else {
+		// search results page
+		selector = `<h1 id="firstHeading" class="firstHeading" lang="en">`;
+	}
+	const htmlToSearch = (response.data.split(selector) || [])[1];
+	if (!htmlToSearch) {
+		receivedMessage.channel.send("No (usable) results");
+		return;
+	}
+	const num = (htmlToSearch.match(/\d+(?=:)/) || [])[0];
+	if (!num) {
+		receivedMessage.channel.send("No (usable) results");
+		return;
+	}
+	const comic = await getXkcdComicInfo(num);
+	const comicEmbed = new Discord.MessageEmbed()
+		.setColor('#1A73E8')
+		.setTitle(`xkcd #${num}: ${comic.title}`)
+		.setImage(comic.img)
+		.setURL(`https://xkcd.com/${num}`)
+		.setFooter(comic.alt);
+	receivedMessage.channel.send(comicEmbed);
+}
+
 module.exports = {
 	meme,
 	autoReact,
@@ -296,5 +381,7 @@ module.exports = {
 	vidtogif,
 	startListening,
 	stopListening,
-	ignoredChannels
+	ignoredChannels,
+	xkcd,
+	xkcdsearch
 };

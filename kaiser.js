@@ -203,6 +203,9 @@ sqlite.startDatabase("./db.sqlite").then(async (db) => {
 				case 'unbanish':
 					base.unbanish(receivedMessage, db);
 					break;
+				case 'xkcd':
+					misc.xkcd(receivedMessage, args);
+					break;
 				default:
 					receivedMessage.channel.send('Invalid command.');
 			}
