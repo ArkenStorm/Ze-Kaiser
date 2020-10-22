@@ -301,10 +301,9 @@ const xkcd = async (receivedMessage, args) => {
 	if (!requestedComic) {
 		// latest. It works
 		num = "";
-	}
-	else if (/^\d+$/.test(requestedComic)) {
+	} else if (/^\d+$/.test(requestedComic) && args.length === 1) {
 		num = parseInt(requestedComic);
-	} else if (requestedComic === "random") {
+	} else if (requestedComic === "random" && args.length === 1) {
 		const latest = await getXkcdComicInfo("");
 		num = Math.floor(Math.random() * (latest.num + 1));
 	} else {
