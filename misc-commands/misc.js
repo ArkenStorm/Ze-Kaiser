@@ -319,6 +319,7 @@ const xkcd = async (receivedMessage, args) => {
 	const comicEmbed = new Discord.MessageEmbed()
 		.setColor('#1A73E8')
 		.setTitle(`xkcd #${num}: ${comic.title}`)
+		.setDescription(`Posted on ${comic.month}/${comic.day}/${comic.year}`)
 		.setImage(comic.img)
 		.setURL(`https://xkcd.com/${num}`)
 		.setFooter(comic.alt);
@@ -363,6 +364,7 @@ const xkcdsearch = async (receivedMessage, args) => {
 	const comicEmbed = new Discord.MessageEmbed()
 		.setColor('#1A73E8')
 		.setTitle(`xkcd #${num}: ${comic.title}`)
+		.setDescription(`Posted on ${comic.month}/${comic.day}/${comic.year}`)
 		.setImage(comic.img)
 		.setURL(`https://xkcd.com/${num}`)
 		.setFooter(comic.alt);
