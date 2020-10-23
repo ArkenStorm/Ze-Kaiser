@@ -1,5 +1,6 @@
 const axios = require('axios').default;
 const { exec } = require('child_process');
+const querystring = require('querystring');
 const fs = require("fs");
 const tmp = require('tmp-promise');
 const base = require('../base-commands/base');
@@ -286,7 +287,7 @@ const stopListening = (receivedMessage, timeout = 0) => {
 }
 
 const getXkcdComicInfo = async (num) => {
-	const response = await axios.get(`https://xkcd.com/${num}/info.0.json`);
+	const response = await axios.get(`https://xkcd.com/${parseInt(num)}/info.0.json`);
 		if (response.status !== 200) {
 			// send error
 			base.sendError(receivedMessage, `Failed to get comic #${num}\n${response.status}: ${response.statusText}`)
@@ -332,7 +333,11 @@ const xkcdsearch = async (receivedMessage, args) => {
 		receivedMessage.channel.send(`You forgot a search term.`);
 		return;
 	}
-	const response = await axios.get(`https://www.explainxkcd.com/wiki/index.php?search=${terms}&title=Special%3ASearch&go=Go`)
+	const url = "https://www.explainxkcd.com/wiki/index.php?" + querystring.stringify({
+		search: `${terms}+-incategory:"All Comics"`,
+		title: "Special:Search",
+	});
+	const response = await axios.get(url);
 	if (response.status !== 200) {
 		// send error
 		base.sendError(receivedMessage, `Failed to search explainxkcd.com for ${terms} #${num}\n${response.status}: ${response.statusText}`)
@@ -355,11 +360,12 @@ const xkcdsearch = async (receivedMessage, args) => {
 		receivedMessage.channel.send("No (usable) results");
 		return;
 	}
-	const num = (htmlToSearch.match(/\d+(?=:)/) || [])[0];
+	let num = (htmlToSearch.match(/\d+(?=:)/) || [])[0];
 	if (!num) {
 		receivedMessage.channel.send("No (usable) results");
 		return;
 	}
+	num = parseInt(num);
 	const comic = await getXkcdComicInfo(num);
 	const comicEmbed = new Discord.MessageEmbed()
 		.setColor('#1A73E8')
