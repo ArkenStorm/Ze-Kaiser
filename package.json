@@ -13,5 +13,8 @@
 		"sqlite": "^4.0.15",
 		"sqlite3": "^5.0.0",
 		"tmp-promise": "^3.0.2"
+	},
+	"devDependencies": {
+		"pm2": "^4.5.0"
 	}
 }
