@@ -2,6 +2,13 @@
 	"name": "ze-kaiser",
 	"version": "1.0.0",
 	"description": "A Discord Bot for the BYU CS Server.",
+	"scripts": {
+		"restart": "pm2 restart kaiser.js",
+		"stop": "pm2 delete kaiser.js",
+		"start": "pm2 start kaiser.js --time",
+		"dev": "pm2 start --watch --ignore-watch='node_modules' kaiser.js --no-daemon",
+		"logs": "pm2 logs"
+	},
 	"main": "kaiser.js",
 	"author": "Taylor Whitlock",
 	"dependencies": {
