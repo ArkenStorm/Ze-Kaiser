@@ -287,13 +287,16 @@ const stopListening = (receivedMessage, timeout = 0) => {
 }
 
 const getXkcdComicInfo = async (num) => {
-	const response = await axios.get(`https://xkcd.com/${parseInt(num)}/info.0.json`);
-		if (response.status !== 200) {
-			// send error
-			base.sendError(receivedMessage, `Failed to get comic #${num}\n${response.status}: ${response.statusText}`)
-			return;
-		}
-		return response.data;
+	if (num !== "") {
+		num = parseInt(num)
+	}
+	const response = await axios.get(`https://xkcd.com/${num}/info.0.json`);
+	if (response.status !== 200) {
+		// send error
+		base.sendError(receivedMessage, `Failed to get comic #${num}\n${response.status}: ${response.statusText}`)
+		return;
+	}
+	return response.data;
 }
 
 const xkcd = async (receivedMessage, args) => {
@@ -305,15 +308,15 @@ const xkcd = async (receivedMessage, args) => {
 		num = "";
 	} else if (/^\d+$/.test(requestedComic) && args.length === 1) {
 		num = parseInt(requestedComic);
+		if (num === 404) {
+			receivedMessage.channel.send("Error 404: comic not found");
+			return;
+		}
 	} else if (requestedComic === "random" && args.length === 1) {
 		const latest = await getXkcdComicInfo("");
 		num = Math.floor(Math.random() * (latest.num + 1));
 	} else {
 		return xkcdsearch(receivedMessage, args);
-	}
-	if (parseInt(num) === 404) {
-		receivedMessage.channel.send("Error 404: comic not found");
-		return;
 	}
 	const comic = await getXkcdComicInfo(num);
 
