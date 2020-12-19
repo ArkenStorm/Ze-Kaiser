@@ -1,5 +1,5 @@
 const low = require('lowdb')
-const FileAsync = require('lowdb/adapters/FileASync')
+const FileAsync = require('lowdb/adapters/FileAsync')
 
 const startDatabase = async (path) => {
     const adapter = new FileAsync(path);
