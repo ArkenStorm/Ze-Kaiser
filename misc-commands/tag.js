@@ -63,7 +63,9 @@ const showTag = async(context) => {
 
 const listTags = async(context) => {
     let receivedMessage = context.message;
-    const allTags = context.nosql.get('tags').value()
+    const allTags = context.nosql.get('tags')
+        .filter({"serverID": receivedMessage.guild.id})
+        .value()
     let tagListEmbed = new Discord.MessageEmbed().setColor('#2295d4');
     let tagText = "";
     allTags.forEach(tag => {

@@ -16,18 +16,23 @@ const trackUpdate = async (context) => {
 		.find({'userID': context.message.author.id, 'statistic': trackString})
 		.assign({'value': updateNum})
 		.write();
-	await context.message.channel.send(`Updated \`${trackString}\` for you, ${context.message.author.username}`);
+	await context.message.react('👍');
 }
 
 const listTrackedItems = async (context) => {
 	const trackedItems = await context.nosql.get('tracking')
-		.find({'userID': context.message.author.id})
+		.filter({'userID': context.message.author.id})
 		.value();
-	let trackEmbed = new Discord.MessageEmbed().setColor('#2295d4').setTitle(`${context.message.author.username}'s tracked items:`);
-	trackedItems.forEach(item => {
-		trackEmbed.addField(item.statistic, item.value);
-	});
-	await context.message.channel.send(trackEmbed);
+	if (trackedItems.length) {
+		let trackEmbed = new Discord.MessageEmbed().setColor('#2295d4').setTitle(`${context.message.author.username}'s tracked items:`);
+		trackedItems.forEach(item => {
+			trackEmbed.addField(item.statistic, item.value);
+		});
+		await context.message.channel.send(trackEmbed);
+	}
+	else {
+		await context.message.channel.send("No tracked items found.");
+	}
 }
 
 const stopTracking = async (context) => {
@@ -40,15 +45,20 @@ const stopTracking = async (context) => {
 
 const leaderboard = async (context) => {
 	let trackString = context.args.join(' ').toLowerCase();
-	let leaderboardItems = await context.nosql.get('tracking')
+	const leaderboardItems = await context.nosql.get('tracking')
 		.filter({'serverID': context.message.guild.id, 'statistic': trackString})
 		.value();
-	let leaderboardEmbed = new Discord.MessageEmbed().setColor('#2295d4').setTitle(`Leaderboard for ${trackString}`);
-	leaderboardItems.forEach(item => {
-		let authorName = client.users.fetch(item.userID).username;
-		leaderboardEmbed.addField(authorName, item.value);
-	});
-	await context.message.channel.send(leaderboardEmbed);
+	if (leaderboardItems.length) {
+		let leaderboardEmbed = new Discord.MessageEmbed().setColor('#2295d4').setTitle(`Leaderboard for ${trackString}`);
+		await leaderboardItems.forEach(async item => {
+			let user = await client.users.fetch(item.userID);
+			leaderboardEmbed.addField(user.username, item.value);
+		});
+		await context.message.channel.send(leaderboardEmbed);
+	}
+	else {
+		await context.message.channel.send("Nobody is tracking that statistic here.");
+	}
 }
 
 module.exports = {
