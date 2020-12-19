@@ -15,7 +15,7 @@ const tag = async (context) => {
         imageURL = args[1];
     }
     else {
-        receivedMessage.channel.send("Lol yo tag bad!");
+        receivedMessage.channel.send("Invalid tag creation.");
         return;
     }
 

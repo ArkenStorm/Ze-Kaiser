@@ -418,6 +418,7 @@ const speak = (context) => {
 	}
 	// TODO: should error check if the user has DMs enabled
 	destination.send(args.join(' '));
+	context.message.delete();
 }
 
 module.exports = {
