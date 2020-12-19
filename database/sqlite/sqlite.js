@@ -11,7 +11,7 @@ const startDatabase = async (path) => {
 		filename: path,
 		driver: Database,
 	});
-	console.log(`Connected successfully to db ${path}`);
+	console.log(`Connected successfully to sqlite db ${path}`);
 
 	let currentSchemaVersion = 0;
 	try {
