@@ -6,7 +6,7 @@
 		"restart": "pm2 restart kaiser.js",
 		"stop": "pm2 delete kaiser.js",
 		"start": "pm2 start kaiser.js --time",
-		"dev": "pm2 start --watch --ignore-watch='node_modules' kaiser.js --no-daemon",
+		"dev": "pm2 start --watch --ignore-watch='node_modules' --watch='**/*.js' kaiser.js --no-daemon",
 		"logs": "pm2 logs"
 	},
 	"main": "kaiser.js",
