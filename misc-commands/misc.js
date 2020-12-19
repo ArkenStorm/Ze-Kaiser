@@ -4,7 +4,7 @@ const querystring = require('querystring');
 const fs = require("fs");
 const tmp = require('tmp-promise');
 const base = require('../base-commands/base');
-const config = require('../config.json');
+const {getConfig} = require('../utils');
 const memeMap = require('../misc-files/memeMap');
 
 tmp.setGracefulCleanup();
@@ -12,29 +12,34 @@ tmp.setGracefulCleanup();
 let smited = new Set();
 let ignoredChannels = new Set();
 
-const meme = (receivedMessage, command, caption) => {
+const meme = (context) => {
+	let receivedMessage = context.message;
+	let command = context.primaryCommand;
+	let caption = context.args.join(' ');
 	if (!memeMap[command]) {
 		receivedMessage.channel.send('How did you do this?', {
 			files: ['./misc-files/is_that_legal.gif']
 		}).catch((err) => {
-			base.sendError(receivedMessage, err);
+			base.sendError(context, err);
 		});
 	}
 	else {
 		receivedMessage.channel.send((caption || memeMap[command].caption), {
 			files: [memeMap[command].file]
 		}).catch((err) => {
-			base.sendError(receivedMessage, err);
+			base.sendError(context, err);
 		});
 	}
 
 	receivedMessage.delete().catch((err) => {
-		base.sendError(receivedMessage, err);
+		base.sendError(context, err);
 	});
 }
 
-const autoReact = (messageReaction) => {
-	if (messageReaction.me || messageReaction.message.author == client.user ||
+const autoReact = (context) => {
+	const messageReaction = context.reaction;
+	const config = getConfig(context.reaction.message.guild.id, context.nosql);
+	if (messageReaction.me || messageReaction.message.author === client.user ||
 		messageReaction.count > 1 || messageReaction.emoji.name === config.starEmoji) {
 		return;
 	}
@@ -52,7 +57,9 @@ const autoReact = (messageReaction) => {
 	}
 }
 
-const smite = (receivedMessage) => {
+const smite = (context) => {
+	let receivedMessage = context.message;
+	const config = getConfig(context.message.guild.id, context.nosql)
 	if (!receivedMessage.mentions.users.first()) {
 		meme(receivedMessage, 'illegal');
 		return;
@@ -84,7 +91,9 @@ const smite = (receivedMessage) => {
 	}
 }
 
-const unsmite = (receivedMessage) => {
+const unsmite = (context) => {
+	let receivedMessage = context.message;
+	const config = getConfig(context.message.guild.id, context.nosql)
 	if (!config.administrators.includes(receivedMessage.author.id)) {
 		receivedMessage.channel.send(`What, *exactly*, do you think you\'re doing, ${receivedMessage.author}?`);
 		return;
@@ -101,7 +110,8 @@ const unsmite = (receivedMessage) => {
 	}
 }
 
-const avatar = (receivedMessage) => {
+const avatar = (context) => {
+	let receivedMessage = context.message;
 	if (!receivedMessage.mentions.users.size) {
 		let embed = new Discord.MessageEmbed()
 			.setImage(receivedMessage.author.displayAvatarURL({dynamic: true}))
@@ -123,7 +133,8 @@ const avatar = (receivedMessage) => {
 	});
 }
 
-const warning = (receivedMessage) => {
+const warning = (context) => {
+	let receivedMessage = context.message;
 	if (!receivedMessage.member) {
 		receivedMessage.channel.send('Why are you trying this command here?')
 		.catch((err) => {
@@ -156,7 +167,10 @@ const checkVideo = (url) => {
 }
 
 const urlRegex = /(https?|ftp):\/\/[^\s\/$.?#].[^\s]*/;
-const vidtogif = async (message) => {
+const vidtogif = async (context) => {
+	let message = context.message;
+	const config = getConfig(context.message.guild.id, context.nosql)
+
 	let image = '';
 
 	if (message.attachments.size > 0) {
@@ -246,14 +260,12 @@ const vidtogif = async (message) => {
 		});
 }
 
-const startListening = (receivedMessage, channel) => {
+const startListening = (context) => {
+	let receivedMessage = context.message;
+	const config = getConfig(context.message.guild.id, context.nosql)
+
 	if (!config.administrators.includes(receivedMessage.author.id)) {
 		receivedMessage.channel.send(`Why must you be like this, ${receivedMessage.author}?`);
-		return;
-	}
-	
-	if (channel) {
-		ignoredChannels.delete(channel);
 		return;
 	}
 
@@ -264,7 +276,12 @@ const startListening = (receivedMessage, channel) => {
 	});
 }
 
-const stopListening = (receivedMessage, timeout = 0) => {
+const stopListening = (context) => {
+	let receivedMessage = context.message;
+	const config = getConfig(context.message.guild.id, context.nosql)
+
+	let timeout = receivedMessage.args || 0;
+
 	if (!config.administrators.includes(receivedMessage.author.id)) {
 		receivedMessage.channel.send(`You can't tell me what to do, ${receivedMessage.author}!`);
 		return;
@@ -286,39 +303,42 @@ const stopListening = (receivedMessage, timeout = 0) => {
 	}
 }
 
-const getXkcdComicInfo = async (num) => {
-	if (num !== "") {
+const getXkcdComicInfo = async (num, context) => {
+  if (num !== "") {
 		num = parseInt(num)
 	}
 	const response = await axios.get(`https://xkcd.com/${num}/info.0.json`);
 	if (response.status !== 200) {
 		// send error
-		base.sendError(receivedMessage, `Failed to get comic #${num}\n${response.status}: ${response.statusText}`)
+		base.sendError(context, `Failed to get comic #${num}\n${response.status}: ${response.statusText}`)
 		return;
 	}
 	return response.data;
 }
 
-const xkcd = async (receivedMessage, args) => {
+const xkcd = async (context) => {
+	let receivedMessage = context.message;
+	let args = context.args;
 	const requestedComic = (args[0] || "").trim();
 	let num;
 	receivedMessage.delete();
 	if (!requestedComic) {
 		// latest. It works
 		num = "";
-	} else if (/^\d+$/.test(requestedComic) && args.length === 1) {
+	}
+	else if (/^\d+$/.test(requestedComic)  && args.length === 1) {
 		num = parseInt(requestedComic);
-		if (num === 404) {
+    if (num === 404) {
 			receivedMessage.channel.send("Error 404: comic not found");
 			return;
 		}
-	} else if (requestedComic === "random" && args.length === 1) {
-		const latest = await getXkcdComicInfo("");
+	} else if (requestedComic === "random"  && args.length === 1) {
+		const latest = await getXkcdComicInfo("", context);
 		num = Math.floor(Math.random() * (latest.num + 1));
 	} else {
-		return xkcdsearch(receivedMessage, args);
+		return xkcdsearch(context);
 	}
-	const comic = await getXkcdComicInfo(num);
+	const comic = await getXkcdComicInfo(num, context);
 
 	const comicEmbed = new Discord.MessageEmbed()
 		.setColor('#1A73E8')
@@ -330,7 +350,9 @@ const xkcd = async (receivedMessage, args) => {
 	receivedMessage.channel.send(comicEmbed);
 }
 
-const xkcdsearch = async (receivedMessage, args) => {
+const xkcdsearch = async (context) => {
+	let receivedMessage = context.message;
+	let args = context.args;
 	const terms = args.join("+");
 	if (!terms) {
 		receivedMessage.channel.send(`You forgot a search term.`);
@@ -380,6 +402,24 @@ const xkcdsearch = async (receivedMessage, args) => {
 	receivedMessage.channel.send(comicEmbed);
 }
 
+const speak = (context) => {
+	const config = getConfig(context.message.guild.id, context.nosql);
+	if (!config.administrators.includes(receivedMessage.author.id)) {
+		return; // no message for the wicked
+	}
+	let args = context.args;
+	let id = args.pop();
+	let destination = client.channels.fetch(id);
+	if (!destination) { // not a valid channel id, try user id
+		destination = client.users.fetch(id);
+		if (!destination) { // not a valid user id
+			return context.message.author.send("I couldn't find a channel or user with that id.");
+		}
+	}
+	// TODO: should error check if the user has DMs enabled
+	destination.send(args.join(' '));
+}
+
 module.exports = {
 	meme,
 	autoReact,
@@ -393,5 +433,6 @@ module.exports = {
 	stopListening,
 	ignoredChannels,
 	xkcd,
-	xkcdsearch
+	xkcdsearch,
+	speak
 };
