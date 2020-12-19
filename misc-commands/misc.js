@@ -1,5 +1,6 @@
 const axios = require('axios').default;
 const { exec } = require('child_process');
+const querystring = require('querystring');
 const fs = require("fs");
 const tmp = require('tmp-promise');
 const base = require('../base-commands/base');
@@ -303,13 +304,16 @@ const stopListening = (context) => {
 }
 
 const getXkcdComicInfo = async (num, context) => {
+  if (num !== "") {
+		num = parseInt(num)
+	}
 	const response = await axios.get(`https://xkcd.com/${num}/info.0.json`);
-		if (response.status !== 200) {
-			// send error
-			base.sendError(context, `Failed to get comic #${num}\n${response.status}: ${response.statusText}`)
-			return;
-		}
-		return response.data;
+	if (response.status !== 200) {
+		// send error
+		base.sendError(context, `Failed to get comic #${num}\n${response.status}: ${response.statusText}`)
+		return;
+	}
+	return response.data;
 }
 
 const xkcd = async (context) => {
@@ -317,28 +321,29 @@ const xkcd = async (context) => {
 	let args = context.args;
 	const requestedComic = (args[0] || "").trim();
 	let num;
+	receivedMessage.delete();
 	if (!requestedComic) {
 		// latest. It works
 		num = "";
 	}
-	else if (/^\d+$/.test(requestedComic)) {
-		num = requestedComic;
-	} else if (requestedComic === "random") {
+	else if (/^\d+$/.test(requestedComic)  && args.length === 1) {
+		num = parseInt(requestedComic);
+    if (num === 404) {
+			receivedMessage.channel.send("Error 404: comic not found");
+			return;
+		}
+	} else if (requestedComic === "random"  && args.length === 1) {
 		const latest = await getXkcdComicInfo("", context);
 		num = Math.floor(Math.random() * (latest.num + 1));
 	} else {
 		return xkcdsearch(context);
-	}
-	receivedMessage.delete();
-	if (parseInt(num) === 404) {
-		receivedMessage.channel.send("Error 404: comic not found");
-		return;
 	}
 	const comic = await getXkcdComicInfo(num, context);
 
 	const comicEmbed = new Discord.MessageEmbed()
 		.setColor('#1A73E8')
 		.setTitle(`xkcd #${num}: ${comic.title}`)
+		.setDescription(`Posted on ${comic.month}/${comic.day}/${comic.year}`)
 		.setImage(comic.img)
 		.setURL(`https://xkcd.com/${num}`)
 		.setFooter(comic.alt);
@@ -353,7 +358,11 @@ const xkcdsearch = async (context) => {
 		receivedMessage.channel.send(`You forgot a search term.`);
 		return;
 	}
-	const response = await axios.get(`https://www.explainxkcd.com/wiki/index.php?search=${terms}&title=Special%3ASearch&go=Go`)
+	const url = "https://www.explainxkcd.com/wiki/index.php?" + querystring.stringify({
+		search: `${terms}+-incategory:"All Comics"`,
+		title: "Special:Search",
+	});
+	const response = await axios.get(url);
 	if (response.status !== 200) {
 		// send error
 		base.sendError(receivedMessage, `Failed to search explainxkcd.com for ${terms} #${num}\n${response.status}: ${response.statusText}`)
@@ -376,15 +385,17 @@ const xkcdsearch = async (context) => {
 		receivedMessage.channel.send("No (usable) results");
 		return;
 	}
-	const num = (htmlToSearch.match(/\d+(?=:)/) || [])[0];
+	let num = (htmlToSearch.match(/\d+(?=:)/) || [])[0];
 	if (!num) {
 		receivedMessage.channel.send("No (usable) results");
 		return;
 	}
+	num = parseInt(num);
 	const comic = await getXkcdComicInfo(num);
 	const comicEmbed = new Discord.MessageEmbed()
 		.setColor('#1A73E8')
 		.setTitle(`xkcd #${num}: ${comic.title}`)
+		.setDescription(`Posted on ${comic.month}/${comic.day}/${comic.year}`)
 		.setImage(comic.img)
 		.setURL(`https://xkcd.com/${num}`)
 		.setFooter(comic.alt);
