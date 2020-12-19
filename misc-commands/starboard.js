@@ -1,9 +1,5 @@
 const Discord = require('discord.js');
-const config = require('../config.json');
-
-const starEmoji = config.starEmoji;
-const embedColor = config.starEmbedColor;
-const minCount = config.starMinCount || 1;
+const moment = require('moment');
 
 function processAttachment(attachment) {
 	const imageLink = attachment.split('.');
@@ -15,7 +11,7 @@ function processAttachment(attachment) {
 	return attachment;
 }
 
-function generateEmbed(message) {
+function generateEmbed(message, starEmoji, embedColor, minCount) {
 	let image = message.attachments.size > 0 ? processAttachment(message.attachments.array()[0].url) : '';
 	if (image === '') {
 		if (message.embeds.length) {
@@ -50,19 +46,20 @@ function generateEmbed(message) {
 		.setAuthor(message.author.tag, message.author.displayAvatarURL)
 		.setTimestamp(new Date())
 		.setFooter(`${message.id}`)
-		.addField(':star: Stars', reactionCount.toString(), true)
+		.addField(':star: Stars', reactionCount.toString(), true) // TODO: change this to the config star emoji
+		.addField('Channel', message.channel, true)
 		.addField(':arrow_heading_up: Jump', `[Click Me](https://discordapp.com/channels/${message.guild.id}/${message.channel.id}/${message.id})`, true)
 		.setImage(image);
 }
 
-async function applyStarboardMessage(message, subtract = false) {
+async function applyStarboardMessage(message, starEmoji, embedColor, minCount, subtract = false) {
 	const starChannel = message.guild.channels.cache.find(channel => channel.name.toLowerCase().indexOf('starboard') !== -1);
 	if (!starChannel && message.reactions.cache.size === 1 && !subtract) { // only happens when the first emoji is added on a message
 		return message.channel.send(`It appears that you do not have a \`Starboard\` channel.`);
 	}
 
 	try {
-		const embed = generateEmbed(message);
+		const embed = generateEmbed(message, starEmoji, embedColor, minCount);
 		const reactionCount = parseInt(embed.fields[0].value);
 
 		// If a star message already exists, edit the old one instead of making a new one
@@ -88,9 +85,19 @@ async function applyStarboardMessage(message, subtract = false) {
 	}
 }
 
-const add = async (reaction, user) => {
+let starOwn = moment(); // starts at bot lifetime
+let starBot = moment();
+const add = async (context) => {
+	const reaction = context.reaction;
+	const user = context.user;
+	const nosql = context.nosql;
 	const message = reaction.message;
-	if (reaction.emoji.name !== starEmoji) {
+
+	const config = nosql.get('config')
+		.find({serverID: message.guild.id})
+		.value().config
+
+	if (reaction.emoji.name !== config.starEmoji) {
 		return;
 	}
 	const starChannel = message.guild.channels.cache.find(channel => channel.name.toLowerCase().indexOf('starboard') !== -1); // temporary fix
@@ -102,21 +109,37 @@ const add = async (reaction, user) => {
 	if (message.author.id === user.id) {
 		await reaction.users.remove(user); // Remove their star
 		// add timer
-		return message.channel.send(`${user}, you cannot star your own messages.`);
+		if (starOwn < moment()) {
+			starOwn.add(2, 'minutes');
+			return message.channel.send(`${user}, you cannot star your own messages.`);
+		}
+		return;
 	}
 
 	if (message.author.bot) {
 		await reaction.users.remove(user);
 		// add timer
-		return message.channel.send(`${user}, you cannot star bot messages.`);
+		if (starBot < moment()) {
+			starBot.add(2, 'minutes');
+			return message.channel.send(`${user}, you cannot star bot messages.`);
+		}
+		return;
 	}
 
-	await applyStarboardMessage(message);
+	await applyStarboardMessage(message, config.starEmoji, config.starEmbedColor, config.starMinCount || 1);
 }
 
-const subtract = async (reaction, user) => {
+const subtract = async (context) => {
+	const reaction = context.reaction;
+	const user = context.user;
+	const nosql = context.nosql;
 	const message = reaction.message;
-	if (reaction.emoji.name !== starEmoji) {
+
+	const config = nosql.get('config')
+		.find({serverID: message.guild.id})
+		.value().config
+
+	if (reaction.emoji.name !== config.starEmoji) {
 		return;
 	}
 
@@ -125,7 +148,7 @@ const subtract = async (reaction, user) => {
 		return;
 	}
 
-	await applyStarboardMessage(message, true);
+	await applyStarboardMessage(message, config.starEmoji, config.starEmbedColor, config.starMinCount || 1,  true);
 }
 
 module.exports = {

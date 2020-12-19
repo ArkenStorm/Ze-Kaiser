@@ -1,0 +1,46 @@
+{
+    "create": {
+        "title": "!event create",
+        "description": "Starts the event creation process. Prepare for bot DMs aplenty."
+    },
+    "list": {
+        "title": "!event list",
+        "description": "Lists all events for the server (no duplicates for repeat events)"
+    },
+    "join": {
+        "title": "!event join \"<event ID>\"",
+        "description": "Marks you as an attendee for the event."
+    },
+    "listAttendees": {
+        "title": "!event listattendees for \"<event ID>\"",
+        "description": "Lists those that are attending the event."
+    },
+    "listAssignees": {
+        "title": "!event listassignees for \"<task ID>\"",
+        "description": "Lists the assignees for the given task"
+    },
+    "assign": {
+        "title": "!event assign <@user> to \"<task ID>\"",
+        "description": "Assigns the specified user to the specified task. Use 'me' to assign yourself."
+    },
+    "task": {
+        "title": "!event create (task | job | assignment) for \"<event ID>\"",
+        "description": "Creates a new task for the specified event."
+    },
+    "taskEdit": {
+        "title": "!event edit (task | job | assignment) \"<task ID>\"",
+        "description": "Edits the description of the task"
+    },
+    "listTasks": {
+        "title": "!event (jobs | joblist | tasks | assignments | listjobs) for \"<event ID>\"",
+        "description": "Lists all the tasks for the given event."
+    },
+    "eventEdit": {
+        "title": "!event edit \"<event ID>\"",
+        "description": "Starts the event edit process. Prepare for more bot DMs."
+    },
+    "delete": {
+        "title": "!event delete \"<event ID>\"",
+        "description": "Ruins all the fun for everyone by killing the event"
+    }
+}

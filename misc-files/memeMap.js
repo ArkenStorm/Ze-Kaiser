@@ -1,5 +1,3 @@
-const { meme } = require("../misc-commands/misc")
-
 const memeMap = {
 	'cooldudes': {
 		caption: 'Oh no!',
