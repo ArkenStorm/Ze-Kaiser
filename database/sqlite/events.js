@@ -35,7 +35,7 @@ const insertEvent = (db, eventData) => {
 }
 
 const getEvent = async (db, event_id, server_id) => {
-    const result = await sqlite.getSingleRow(db, `SELECT * FROM Event WHERE event_id = ${event_id} AND server_id = ${server_id}`);
+    const result = await sqlite.getSingleRow(db, 'SELECT * FROM Event WHERE event_id = ? AND server_id = ?', [event_id, server_id]);
 
     if (result == undefined) {
         return null;
@@ -59,7 +59,7 @@ const getEvent = async (db, event_id, server_id) => {
 };
 
 const getAllEvents = async (db, server_id) => {
-    const results = await sqlite.getAllRows(db, `SELECT * FROM Event WHERE server_id = ${server_id}`);
+    const results = await sqlite.getAllRows(db, 'SELECT * FROM Event WHERE server_id = ?', [server_id]);
     return results;
 };
 
@@ -133,6 +133,11 @@ const getAssignmentsForEvent = async (db, event_id) => {
     return results;
 }
 
+const getAssignment = async (db, assignment_id, server_id) => {
+    const result = await sqlite.getSingleRow(db, 'SELECT * FROM Assignment WHERE assignment_id = ? AND server_id = ?', [assignment_id, server_id]);
+    return result;
+}
+
 const deleteAssignment = (db, assignment_id) => {
     return Promise.all(
         run(db, 'DELETE FROM Event WHERE assignment_id = ?', [
@@ -159,8 +164,8 @@ const insertAssignee = (db, asigneeData) => {
 	);
 }
 
-const getAssigneesForAssignment = async (db, assignment_id) => {
-    const results = await sqlite.getAllRows(db, 'SELECT * from Assignee WHERE assignment_id = ?', [assignment_id]);
+const getAssigneesForAssignment = async (db, assignment_id, server_id) => {
+    const results = await sqlite.getAllRows(db, 'SELECT * from Assignee WHERE assignment_id = ?  AND server_id = ?', [assignment_id, server_id]);
     return results;
 }
 
@@ -186,6 +191,7 @@ module.exports = {
 
     insertAssignment,
     getAssignmentsForEvent,
+    getAssignment,
     deleteAssignment,
 
     insertAssignee,

@@ -33,7 +33,7 @@ const init = (context) => {
 }
 
 const edit = (context) => {
-    // list all config properties for the current server, in dms
+    // list all config properties for the current server, in dms; make sure the user is admin for the server
     // have user select one of the properties
     // after selection, await new input // TODO: MAKE ROBUST ERROR CHECKING
 }

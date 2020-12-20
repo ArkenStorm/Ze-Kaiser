@@ -3,7 +3,7 @@ const track = async (context) => {
 	await context.nosql.get('tracking')
 		.push({'userID': context.message.author.id, 'serverID': context.message.guild.id, 'statistic': trackString, 'value': 0})
 		.write();
-	await context.message.channel.send(`Now tracking \`${trackString}\` for you, ${context.message.author.username}`);
+	await context.message.channel.send(`Now tracking \`${trackString}\` for you, ${context.message.author.username}.`);
 }
 
 const trackUpdate = async (context) => {
@@ -40,7 +40,7 @@ const stopTracking = async (context) => {
 	await context.nosql.get('tracking')
 		.remove({'userID': context.message.author.id, 'statistic': trackString})
 		.write();
-	await context.message.channel.send(`No longer tracking \`${trackString}\` for you, ${context.message.author.username}`);
+	await context.message.channel.send(`No longer tracking \`${trackString}\` for you, ${context.message.author.username}.`);
 }
 
 const leaderboard = async (context) => {
@@ -51,7 +51,7 @@ const leaderboard = async (context) => {
 	if (leaderboardItems.length) {
 		let leaderboardEmbed = new Discord.MessageEmbed().setColor('#2295d4').setTitle(`Leaderboard for ${trackString}`);
 		await leaderboardItems.forEach(async item => {
-			let user = await client.users.fetch(item.userID);
+			let user = await client.users.cache.get(item.userID);
 			leaderboardEmbed.addField(user.username, item.value);
 		});
 		await context.message.channel.send(leaderboardEmbed);
