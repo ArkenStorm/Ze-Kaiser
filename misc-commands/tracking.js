@@ -56,7 +56,7 @@ const leaderboard = async (context) => {
 	const leaderboardItems = await context.nosql.get('tracking')
 		.filter({'statistic': trackString})
 		.value();
-	leaderboardItems.filter(async item => await context.message.guild.members.cache.get(item.userID) !== undefined);
+	leaderboardItems.filter(async item => (await context.message.guild.members.cache.get(item.userID)) !== undefined);
 	if (leaderboardItems.length) {
 		let leaderboardEmbed = new Discord.MessageEmbed().setColor('#2295d4').setTitle(`Leaderboard for ${trackString}`);
 		await leaderboardItems.forEach(async item => {
