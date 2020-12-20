@@ -402,16 +402,17 @@ const xkcdsearch = async (context) => {
 	receivedMessage.channel.send(comicEmbed);
 }
 
-const speak = (context) => {
+const speak = async (context) => {
 	const config = getConfig(context.message.guild.id, context.nosql);
 	if (!config.administrators.includes(context.message.author.id)) {
 		return; // no message for the wicked
 	}
 	let args = context.args;
 	let id = args.pop();
-	let destination = client.channels.fetch(id);
+	let destination;
+	await client.channels.fetch(id).then(dest => destination = dest);
 	if (!destination) { // not a valid channel id, try user id
-		destination = client.users.fetch(id);
+		await client.users.fetch(id).then(dest => destination = dest);
 		if (!destination) { // not a valid user id
 			return context.message.author.send("I couldn't find a channel or user with that id.");
 		}
