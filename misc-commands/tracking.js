@@ -1,5 +1,11 @@
 const track = async (context) => {
 	let trackString = context.args.join(' ').toLowerCase();
+	let valueExists = await context.nosql.get('tracking')
+		.find({'userID': context.message.author.id, 'statistic': trackString})
+		.value();
+	if (valueExists) {
+		return await context.message.reply("I'm already tracking that for you.");
+	}
 	await context.nosql.get('tracking')
 		.push({'userID': context.message.author.id, 'serverID': context.message.guild.id, 'statistic': trackString, 'value': 0})
 		.write();
