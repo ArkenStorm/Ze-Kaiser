@@ -42,7 +42,7 @@ sqlite.startDatabase("./db.sqlite").then(async (sqliteDB) => {
 				return;
 			}
 
-			if (receivedMessage.guild === null) {
+			if (receivedMessage.guild === null) { // no commands in DMs allowed... for now 
 				return;
 			}
 

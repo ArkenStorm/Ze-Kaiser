@@ -137,14 +137,14 @@ const createEvent = async (context) => {
 
 		if (!descriptionCorrect) {
 			await dm.send("How would you describe the event?");
-			await dm.awaitMessages(m => m, {max: 1, time: 60000, errors: ['time']})
+			await dm.awaitMessages(m => m, {max: 1, time: 120000, errors: ['time']})
 			.then(collected => {
 				if (collected.first().content.toLowerCase() === "cancel") return canceled = true;
 				eventData.description = collected.first().content;
 				descriptionCorrect = true;
 			})
 			.catch(collected => {
-				dm.send("You took too long to respond (>60 seconds), try `!event create` again in the place where you originally typed it.");
+				dm.send("You took too long to respond (>120 seconds), try `!event create` again in the place where you originally typed it.");
 				canceled = true;
 			});
 			if (canceled) {
@@ -188,21 +188,15 @@ const createEvent = async (context) => {
 }
 
 const listEvents = (context) => {
-	sqlite.events.getAllEvents(context.db, context.message.channel.guild.id).then((eventResults) => {
+	sqlite.events.getAllEvents(context.db, context.message.guild.id).then(eventResults => {
 		const toDisplay = eventResults.filter(response => response.server_id === context.message.channel.guild.id); // is this redundant? it seems redundant
 		if(toDisplay.length) {
-			context.message.channel.send("Here you go!");
+			let eventEmbed = new Discord.MessageEmbed().setColor('#2295d4')
+				.setTitle(`Events scheduled for ${context.message.guild.name}`);
 			toDisplay.forEach(row => {
-				const message = `
-					Id: ${row.event_id}
-					title: ${row.title}
-					description: ${row.description}
-					start: ${row.start_date_time}
-					end: ${row.end_date_time}
-				`
-				context.message.channel.send(message); // only worry is rate limiting, maybe make embeds out of these things
-			})
-			context.message.channel.send("That's all folks");
+				eventEmbed.addField(row.title, `ID: ${row.event_id}`);
+			});
+			context.message.channel.send(eventEmbed);
 		}
 		else {
 			context.message.channel.send("Ha, and you thought you had events...");
@@ -215,10 +209,10 @@ const listEvents = (context) => {
 }
 
 const joinEvent = (context) => {
-	const eventId = context.matches[0] || 1;
+	const eventID = context.matches[0] || 1;
 	const attendeeData = {
 		user_id: context.message.author.id,
-		event_id: eventId
+		event_id: eventID
 	}
 	sqlite.events.insertAttendee(context.db, attendeeData).then(res => {
 		context.message.channel.send("You are now marked as attending the event.");
@@ -260,7 +254,7 @@ const createTask = async (context) => {
 }
 
 const editTask = (context) => {
-	context.message.channel.send("consider the task edited");
+	context.message.channel.send("Consider the task edited. (This isn't implemented yet)");
 }
 
 const listTasks = (context) => {
@@ -294,7 +288,7 @@ const listTasks = (context) => {
 }
 
 const editEvent = (context) => {
-	context.message.channel.send("consider the event edited");
+	context.message.channel.send("Consider the event edited. (This isn't implemented yet)");
 }
 
 const removeEvent = (context) => {
@@ -303,31 +297,30 @@ const removeEvent = (context) => {
 	context.message.channel.send("Event ~~destroyed~~ removed with great prejudice.");
 }
 
-const listAttendees = (context) => {
+const listAttendees = async (context) => {
 	const event_id = context.matches[0];
-	sqlite.events.getEvent(context.db, event_id, context.message.channel.guild.id).then((eventResult) => {
-		const list = sqlite.events.getAttendeesForEvent(context.db, event_id).then((attendeeResults) => {
+	sqlite.events.getEvent(context.db, event_id, context.message.channel.guild.id).then(async eventResult => {
+		const list = sqlite.events.getAttendeesForEvent(context.db, event_id).then(async attendeeResults => {
 			const eventToDisplay = eventResult;
 			const toDisplay = attendeeResults;
 
-			let message = "";
 			if(toDisplay.length) {
-				message += `ID: ${event_id}\nEvent: ${eventToDisplay.title}\n`;
-
+				let attendeeEmbed = new Discord.MessageEmbed().setColor('#2295d4')
+					.setTitle(`Attendees for ${eventToDisplay.title}`);
 				toDisplay.forEach(row => {
 					// fetch users so we can see their name
-					const User = client.users.cache.get(row.user_id);
-					if (User) {
-						message += `${User.username}\n`
+					const user = client.users.cache.get(row.user_id);
+					if (user) {
+						attendeeEmbed.addField("User:", user.username);
 					}
 					else {
-						message += `user_id: ${row.user_id}\n`
+						attendeeEmbed.addField("User ID:", row.user_id);
 					}
 				});
-				context.message.channel.send(message);
+				await context.message.channel.send(attendeeEmbed);
 			}
 			else {
-				context.message.channel.send("Ha, and you thought you had attendees...");
+				await context.message.channel.send("Ha, and you thought you had attendees...");
 			}
 
 		}).catch(err => {
@@ -338,29 +331,32 @@ const listAttendees = (context) => {
 		console.log(err)
 		context.message.channel.send("Well I tried...");
 	});
-
-	context.message.channel.send("consider the attendees listed");
 }
 
-const listAssignees = (context) => {
+const listAssignees = async (context) => {
 	// this should probably be limited to only events from the server where the command is given
 	const assignment_id = context.matches[0];
-	sqlite.events.getAssigneesForAssignment(context.db, assignment_id).then((assigneeResults) => {
+	const assignment = await sqlite.events.getAssignment(context.db, assignment_id, context.message.guild.id);
+	if (!assignment) {
+		return await context.message.channel.send("No assignment was found with that ID");
+	}
+	sqlite.events.getAssigneesForAssignment(context.db, assignment_id, context.message.guild.id).then(assigneeResults => {
 		const toDisplay = assigneeResults;
 
 		if(toDisplay.length) {
-			let message = "";
+			let assigneeEmbed = new Discord.MessageEmbed().setColor('#2295d4')
+				.setTitle(`People assigned to: ${assignment.description}`);
 			toDisplay.forEach(row => {
 				// fetch users so we can get their names
-				const User = client.users.cache.get(row.user_id);
-				if (User) {
-					message += `${User.username}\n`
+				const user = client.users.cache.get(row.user_id);
+				if (user) {
+					assigneeEmbed.addField("User:", user.username);
 				}
 				else {
-					message += `user_id: ${row.user_id}\n`
+					assigneeEmbed.addField("User ID:", row.user_id);
 				}
 			});
-			context.message.channel.send(message);
+			context.message.channel.send(assigneeEmbed);
 		}
 		else {
 			context.message.channel.send("Ha, and you thought you had assignees...");
@@ -369,6 +365,22 @@ const listAssignees = (context) => {
 	}).catch(err => {
 		console.log(err);
 		context.message.channel.send("Well I tried...");
+	});
+}
+
+const displayEventInfo = (context) => {
+	const event_id = context.matches[0];
+	sqlite.events.getEvent(context.db, event_id, context.message.guild.id).then(eventResult => {
+		let eventEmbed = new Discord.MessageEmbed().setColor('#2295d4')
+			.setTitle(eventResult.title)
+			.addField("ID:", eventResult.event_id)
+			.addField("Description:", eventResult.description)
+			.addField("Start Time:", eventResult.start_date_time, true)
+			.addField("End Time:", eventResult.end_date_time, true);
+		context.message.channel.send(eventEmbed);
+	}).catch(err => {
+		console.log(err);
+		context.message.channel.send("No event found with that ID.");
 	});
 }
 
@@ -387,7 +399,8 @@ const detailers = {
 	'taskedit': editTask,
 	'tasklist': listTasks,
 	'edit': editEvent,
-	'delete': removeEvent
+	'delete': removeEvent,
+	'info': displayEventInfo
 }
 
 module.exports = {
