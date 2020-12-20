@@ -18,9 +18,11 @@ const trackUpdate = async (context) => {
 	if (isNaN(updateNum)) {
 		return context.message.channel.send("Invalid update value.");
 	}
-	await context.nosql.get('tracking')
-		.find({'userID': context.message.author.id, 'statistic': trackString})
-		.assign({'value': updateNum})
+	let stat = await context.nosql.get('tracking')
+		.find({'userID': context.message.author.id, 'statistic': trackString});
+	
+	updateNum += stat.value().value;
+	stat.assign({'value': updateNum})
 		.write();
 	await context.message.react('👍');
 }
@@ -52,8 +54,9 @@ const stopTracking = async (context) => {
 const leaderboard = async (context) => {
 	let trackString = context.args.join(' ').toLowerCase();
 	const leaderboardItems = await context.nosql.get('tracking')
-		.filter({'serverID': context.message.guild.id, 'statistic': trackString})
+		.filter({'statistic': trackString})
 		.value();
+	leaderboardItems.filter(async item => await context.message.guild.members.cache.get(item.userID) !== undefined);
 	if (leaderboardItems.length) {
 		let leaderboardEmbed = new Discord.MessageEmbed().setColor('#2295d4').setTitle(`Leaderboard for ${trackString}`);
 		await leaderboardItems.forEach(async item => {
