@@ -404,7 +404,7 @@ const xkcdsearch = async (context) => {
 
 const speak = (context) => {
 	const config = getConfig(context.message.guild.id, context.nosql);
-	if (!config.administrators.includes(receivedMessage.author.id)) {
+	if (!config.administrators.includes(context.message.author.id)) {
 		return; // no message for the wicked
 	}
 	let args = context.args;
