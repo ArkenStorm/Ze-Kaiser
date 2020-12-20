@@ -1,12 +1,12 @@
 {
 	"name": "ze-kaiser",
-	"version": "1.0.0",
+	"version": "2.0.0",
 	"description": "A Discord Bot for the BYU CS Server.",
 	"scripts": {
-		"restart": "pm2 restart kaiser.js",
-		"stop": "pm2 delete kaiser.js",
-		"start": "pm2 start kaiser.js --time",
-		"dev": "pm2 start --watch --ignore-watch='node_modules' --watch='**/*.js' kaiser.js --no-daemon",
+		"restart": "pm2 restart kaiser",
+		"stop": "pm2 delete kaiser",
+		"start": "pm2 start kaiser --time",
+		"dev": "pm2 start --watch --ignore-watch='node_modules' --watch='**/*.js' kaiser --no-daemon",
 		"logs": "pm2 logs"
 	},
 	"main": "kaiser.js",
