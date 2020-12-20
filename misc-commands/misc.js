@@ -409,10 +409,9 @@ const speak = async (context) => {
 	}
 	let args = context.args;
 	let id = args.pop();
-	let destination;
-	await client.channels.fetch(id).then(dest => destination = dest);
+	let destination = await client.channels.cache.get(id);
 	if (!destination) { // not a valid channel id, try user id
-		await client.users.fetch(id).then(dest => destination = dest);
+		destination = await client.users.cache.get(id);
 		if (!destination) { // not a valid user id
 			return context.message.author.send("I couldn't find a channel or user with that id.");
 		}
