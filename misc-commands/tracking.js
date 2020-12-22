@@ -66,7 +66,7 @@ const leaderboard = async (context) => {
 		.then(items => items.filter(item => item.user !== undefined));
 	if (leaderboardItems.length) {
 		let leaderboardEmbed = new Discord.MessageEmbed().setColor('#2295d4').setTitle(`Leaderboard for ${trackString}`);
-		leaderboardItems.forEach(item => leaderboardEmbed.addField(item?.username, item.value));
+		leaderboardItems.sort((a, b) => b.value - a.value).forEach(item => leaderboardEmbed.addField(item?.username, item.value));
 		await context.message.channel.send(leaderboardEmbed);
 	}
 	else {
