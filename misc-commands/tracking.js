@@ -7,7 +7,7 @@ const track = async (context) => {
 		return await context.message.reply("I'm already tracking that for you.");
 	}
 	await context.nosql.get('tracking')
-		.push({'userID': context.message.author.id, 'serverID': context.message.guild.id, 'statistic': trackString, 'value': 0})
+		.push({'userID': context.message.author.id, 'statistic': trackString, 'value': 0})
 		.write();
 	await context.message.channel.send(`Now tracking \`${trackString}\` for you, ${context.message.author.username}.`);
 }
@@ -62,7 +62,7 @@ const leaderboard = async (context) => {
 	const leaderboardItems = await context.nosql.get('tracking')
 		.filter({'statistic': trackString})
 		.value();
-	leaderboardItems.filter(async item => (await context.message.guild.members.cache.get(item.userID)) !== undefined);
+	await leaderboardItems.filter(async item => (await context.message.guild.members.cache.get(item.userID)) !== undefined);
 	if (leaderboardItems.length) {
 		let leaderboardEmbed = new Discord.MessageEmbed().setColor('#2295d4').setTitle(`Leaderboard for ${trackString}`);
 		await leaderboardItems.forEach(async item => {
