@@ -62,13 +62,11 @@ const leaderboard = async (context) => {
 	const leaderboardItems = await context.nosql.get('tracking')
 		.filter({'statistic': trackString})
 		.value();
-	await leaderboardItems.filter(async item => (await context.message.guild.members.cache.get(item.userID)) !== undefined);
+	await Promise.all(leaderboardItems.map(async item => await context.message.guild.members.fetch(item.userID).then(u => item.username = u.user.username)))
+		.then(items => items.filter(item => item.user !== undefined));
 	if (leaderboardItems.length) {
 		let leaderboardEmbed = new Discord.MessageEmbed().setColor('#2295d4').setTitle(`Leaderboard for ${trackString}`);
-		await leaderboardItems.forEach(async item => {
-			let user = await context.message.guild.members.cache.get(item.userID);
-			leaderboardEmbed.addField(user?.username, item.value);
-		});
+		leaderboardItems.forEach(item => leaderboardEmbed.addField(item?.username, item.value));
 		await context.message.channel.send(leaderboardEmbed);
 	}
 	else {
