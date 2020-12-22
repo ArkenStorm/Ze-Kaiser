@@ -18,8 +18,8 @@ const trackUpdate = async (context) => {
 	if (isNaN(updateNum)) {
 		return context.message.channel.send("Invalid update value.");
 	}
-	else if (updateNum > 1000 || updateNum < 100) {
-		return context.message.channel.send("That's a little much, don't you think?");
+	else if (Math.abs(updateNum) > 100) {
+		return context.message.channel.send("Could you not?");
 	}
 	let stat = await context.nosql.get('tracking')
 		.find({'userID': context.message.author.id, 'statistic': trackString});
