@@ -275,7 +275,7 @@ const hangman = async (context) => {
 	} catch (err) {
 		if (err instanceof NoResponseException) { /* Should have already been handled by the time we get here */ }
 		else {
-			base.sendError(receivedMessage, err);
+			base.sendError(context, err);
 		}
 	} finally {
 		if (receivedMessage.deletable) {
@@ -330,7 +330,7 @@ const guess = async (context) => {
 
 		await receivedMessage.channel.send(replyMessage);
 	} catch (err) {
-		base.sendError(receivedMessage, err);
+		base.sendError(context, err);
 	}
 }
 

@@ -129,7 +129,7 @@ const avatar = (context) => {
 		});
 	}
 	receivedMessage.delete().catch((err) => {
-		base.sendError(receivedMessage, err);
+		base.sendError(context, err);
 	});
 }
 
@@ -138,7 +138,7 @@ const warning = (context) => {
 	if (!receivedMessage.member) {
 		receivedMessage.channel.send('Why are you trying this command here?')
 		.catch((err) => {
-			base.sendError(receivedMessage, err);
+			base.sendError(context, err);
 		});
 		return;
 	}
@@ -149,10 +149,10 @@ const warning = (context) => {
 	receivedMessage.channel.send(caption, {
 		files: ['./misc-files/buhgok.png']
 	}).catch((err) => {
-		base.sendError(receivedMessage, err);
+		base.sendError(context, err);
 	});
 	receivedMessage.delete().catch((err) => {
-		base.sendError(receivedMessage, err);
+		base.sendError(context, err);
 	});
 }
 
@@ -207,12 +207,12 @@ const vidtogif = async (context) => {
 				return message.reply(`That video is too large (${(config.maxVideoSize / 1000000).toFixed()}MB cap)!`);
 
 			else {
-				base.sendError(message, e);
+				base.sendError(context, e);
 				return message.reply(`Something went wrong downloading the video. An admin has been notified of this.`);
 			}
 
 		} else {
-			base.sendError(message, e);
+			base.sendError(context, e);
 			return message.reply(`Something went very wrong downloading the video. An admin has been notified of this.`);
 		}
 	}
@@ -238,7 +238,7 @@ const vidtogif = async (context) => {
 		async (error, stdout, stderr) => {
 			try {
 				if (error) {
-					base.sendError(message, error);
+					base.sendError(context, error);
 					return message.reply(`Something went wrong encoding the GIF. An admin has been notified of this.`);
 				}
 
@@ -252,7 +252,7 @@ const vidtogif = async (context) => {
 				await message.delete();
 			} catch (err) {
 				await message.reply(`Something went wrong sending the GIF. An admin has been notified of this.`);
-				base.sendError(message, err);
+				base.sendError(context, err);
 			} finally {
 				tempVideoFile.cleanup();
 				tempGIFFile.cleanup();
@@ -272,7 +272,7 @@ const startListening = (context) => {
 	let silencedChannel = receivedMessage.mentions.channels.first() || receivedMessage.channel;
 	ignoredChannels.delete(silencedChannel);
 	receivedMessage.channel.send(`I will no longer ignore ${silencedChannel}.`).catch((err) => {
-		base.sendError(receivedMessage, err);
+		base.sendError(context, err);
 	});
 }
 
@@ -295,7 +295,7 @@ const stopListening = (context) => {
 	let channel = receivedMessage.mentions.channels.first() || receivedMessage.channel;
 	ignoredChannels.add(channel);
 	receivedMessage.channel.send(`I will ignore ${channel} for the time being.`).catch((err) => {
-		base.sendError(receivedMessage, err);
+		base.sendError(context, err);
 	});
 
 	if (time) {
@@ -365,7 +365,7 @@ const xkcdsearch = async (context) => {
 	const response = await axios.get(url);
 	if (response.status !== 200) {
 		// send error
-		base.sendError(receivedMessage, `Failed to search explainxkcd.com for ${terms} #${num}\n${response.status}: ${response.statusText}`)
+		base.sendError(context, `Failed to search explainxkcd.com for ${terms} #${num}\n${response.status}: ${response.statusText}`)
 		return;
 	}
 	if (/There were no results matching the query/.test(response.data)) {

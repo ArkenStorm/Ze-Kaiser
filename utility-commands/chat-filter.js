@@ -12,12 +12,12 @@ const filter = (context) => {
 	for (const word of vulgarity) {
 		if (receivedMessage.content.indexOf(word) != -1) {
 			receivedMessage.delete().catch((err) => {
-				base.sendError(receivedMessage, err);
+				base.sendError(context, err);
 			});
 			receivedMessage.channel.send(`Tsk tsk, ${receivedMessage.author}`, {
 				files: ['./misc-files/christian-server.jpg']
 			}).catch((err) => {
-				base.sendError(receivedMessage, err);
+				base.sendError(context, err);
 			});
 
 			let modEmbed = new Discord.MessageEmbed().setColor('#F69400');
