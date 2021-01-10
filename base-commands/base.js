@@ -30,31 +30,27 @@ const complete = (context) => {
 	}
 }
 
-const addRole = (context) => {
+const addRole = async (context) => {
 	let receivedMessage = context.message;
 	let role = context.args;
 	if (!role.length) {
-		receivedMessage.channel.send('I need a role to try to add!');
-		return;
+		return receivedMessage.channel.send('I need a role to try to add!');
 	}
 	role = role.join(' ');  //For roles with multiple words
 
 	const zeRole = receivedMessage.guild.roles.cache.find(zeRole => zeRole.name.toLowerCase() === role.toLowerCase());
 
 	if(!zeRole) {
-		receivedMessage.channel.send(`${receivedMessage.author}, the ${role} role doesn't seem to exist.  Make sure you spelled it right.`);
-		return;
+		return receivedMessage.channel.send(`${receivedMessage.author}, the ${role} role doesn't seem to exist.  Make sure you spelled it right.`);
 	}
 
 	if (role === '@everyone') {
-		receivedMessage.channel.send('Foolish mortal, you cannot add that role!');
-		return;
+		return receivedMessage.channel.send('Foolish mortal, you cannot add that role!');
 	}
 
 	let botHighestRole = receivedMessage.guild.me.roles.highest;
 	if (botHighestRole.comparePositionTo(zeRole) <= 0) {
-		receivedMessage.channel.send(`I'm sorry ${receivedMessage.author}, I'm afraid I can't do that.`);
-		return;
+		return receivedMessage.channel.send(`I'm sorry ${receivedMessage.author}, I'm afraid I can't do that.`);
 	}
 
 	if (receivedMessage.member.roles.cache.has(zeRole.id)) {
@@ -70,7 +66,7 @@ const addRole = (context) => {
 	}
 }
 
-const addRoles = (context) => {
+const addRoles = async (context) => {
 	let receivedMessage = context.message;
 	let roles = context.args;
 	if (!roles.length) {
@@ -116,29 +112,26 @@ const addRoles = (context) => {
 	});
 }
 
-const removeRole = (context) => {
+const removeRole = async (context) => {
 	let receivedMessage = context.message;
 	let role = context.args;
 	if (!role.length) {
-		receivedMessage.channel.send('I need a role to try to remove!');
-		return;
+		return receivedMessage.channel.send('I need a role to try to remove!');
 	}
 	role = role.join(' ');  //For roles with multiple words
 
 	const zeRole = receivedMessage.guild.roles.cache.find(zeRole => zeRole.name.toLowerCase() === role.toLowerCase());
 
 	if(!zeRole) {
-		receivedMessage.channel.send(`${receivedMessage.author}, the ${role} role doesn't seem to exist.  Make sure you spelled it right.`);
-		return;
+		return receivedMessage.channel.send(`${receivedMessage.author}, the ${role} role doesn't seem to exist.  Make sure you spelled it right.`);
 	}
 
 	if (role === '@everyone') {
-		receivedMessage.channel.send('Foolish mortal, you cannot remove that role!');
-		return;
+		return receivedMessage.channel.send('Foolish mortal, you cannot remove that role!');
 	}
 
 	if (receivedMessage.member.roles.cache.has(zeRole.id)) {
-		return receivedMessage.member.roles.remove(zeRole).then(() => {
+		return await receivedMessage.member.roles.remove(zeRole).then(() => {
 			receivedMessage.channel.send(`${receivedMessage.author}, I've removed the "${zeRole.name}" role from you.`).catch((err) => {
 				sendError(context, err);
 			});
@@ -150,18 +143,16 @@ const removeRole = (context) => {
 	}
 }
 
-const removeRoles = (context) => {
+const removeRoles = async (context) => {
 	let receivedMessage = context.message;
 	let roles = context.args;
 	if (!roles.length) {
-		receivedMessage.channel.send('I need some roles to try to remove!');
-		return;
+		return receivedMessage.channel.send('I need some roles to try to remove!');
 	}
 	roles = roles.join(' ');  //For roles with multiple words
 	roles = roles.split(', ');
 	if (roles.includes('@everyone')) {
-		receivedMessage.channel.send('Foolish mortal, you cannot remove the @everyone role! No roles have been removed because of your insolence!');
-		return;
+		return receivedMessage.channel.send('Foolish mortal, you cannot remove the @everyone role! No roles have been removed because of your insolence!');
 	}
 
 	const zeRoles = [];
@@ -182,7 +173,7 @@ const removeRoles = (context) => {
 			nonRemovedRoles.push(receivedMessage.channel.guild.roles.cache.get(role.id).name);
 		}
 	}
-	return receivedMessage.member.roles.remove(zeRoles).then(() => {
+	await receivedMessage.member.roles.remove(zeRoles).then(() => {
 		const removedRoles = [];	//This is to keep the bot from pinging everyone with the roles it added
 		for (let i = 0; i < zeRoles.length; ++i) {
 			removedRoles.push(zeRoles[i].name);
@@ -190,14 +181,14 @@ const removeRoles = (context) => {
 		let specifics = (nonRemovedRoles.length ? "\nYou don't have have these roles: " + nonRemovedRoles.join(', ') : '') +
 			(nonExistentRoles.length ? "\nThese roles don't seem to exist: " + nonExistentRoles.join(', ') + "\nMake sure the spelling is correct." : '');
 		if (removedRoles.length) {
-			receivedMessage.channel.send(`${receivedMessage.author}, the following roles have been removed: ${removedRoles.join(', ') + specifics}`);
+			return receivedMessage.channel.send(`${receivedMessage.author}, the following roles have been removed: ${removedRoles.join(', ') + specifics}`);
 		}
 		else {
 			let message = specifics || "How did you even get to this condition?";
-			receivedMessage.channel.send(message);
 			if (message === 'How did you even get to this condition?') {
-				sendError(context, "Something got real messed up somehow. Hopefully the error can be determined by looking at the above message.")
+				sendError(context, "Something got real messed up somehow. Hopefully the error can be determined by looking at the above message.");
 			}
+			return receivedMessage.channel.send(message);
 		}
 	}).catch(() => {
 		receivedMessage.channel.send('There was an error removing the roles.');
