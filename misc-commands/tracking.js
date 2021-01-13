@@ -1,5 +1,8 @@
 const track = async (context) => {
 	let trackString = context.args.join(' ').toLowerCase();
+	if (trackString == '') {
+		return context.message.channel.send("No.");
+	}
 	let valueExists = await context.nosql.get('tracking')
 		.find({'userID': context.message.author.id, 'statistic': trackString})
 		.value();
