@@ -4,6 +4,7 @@ const hangman = require('./misc-commands/hangman');
 const tag = require('./misc-commands/tag')
 const events = require('./utility-commands/events');
 const tracking = require('./misc-commands/tracking');
+const { xkcd } = require('./misc-commands/xkcd');
 
 const commands = {
 	'cooldudes': misc.meme,
@@ -49,7 +50,7 @@ const commands = {
 	'banish': base.banish,
 	'shadowban': base.banish,
 	'unbanish': base.unbanish,
-	'xkcd': misc.xkcd,
+	'xkcd': xkcd,
 	'event': events.event,
 	'tag': tag.tag,
 	'untag': tag.untag,
