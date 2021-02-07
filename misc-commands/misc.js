@@ -309,7 +309,7 @@ const speak = async (context) => {
 	}
 	let args = context.args;
 	let id = args.pop();
-	let destination = await client.channels.cache.get(id);
+	let destination = await client.channels.cache.get(id); // this needs to be limited to only where the admin has power
 	if (!destination) { // not a valid channel id, try user id
 		destination = await client.users.cache.get(id);
 		if (!destination) { // not a valid user id

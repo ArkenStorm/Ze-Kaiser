@@ -43,7 +43,7 @@ function generateEmbed(message, starEmoji, embedColor, minCount) {
 	return new Discord.MessageEmbed()
 		.setColor(embedColor)
 		.setDescription(message.cleanContent)
-		.setAuthor(message.author.tag, message.author.displayAvatarURL)
+		.setAuthor(message.member.displayName, message.author.displayAvatarURL)
 		.setTimestamp(new Date())
 		.setFooter(`${message.id}`)
 		.addField(':star: Stars', reactionCount.toString(), true) // TODO: change this to the config star emoji

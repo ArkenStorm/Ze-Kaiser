@@ -1,5 +1,5 @@
 const track = async (context) => {
-	let trackString = context.args.join(' ').toLowerCase();
+	let trackString = context.args.join(' ').toLowerCase().trim();
 	if (trackString == '') {
 		return context.message.channel.send("No.");
 	}
@@ -41,7 +41,7 @@ const listTrackedItems = async (context) => {
 		.filter({'userID': context.message.author.id})
 		.value();
 	if (trackedItems.length) {
-		let trackEmbed = new Discord.MessageEmbed().setColor('#2295d4').setTitle(`${context.message.author.username}'s tracked items:`);
+		let trackEmbed = new Discord.MessageEmbed().setColor('#2295d4').setTitle(`${context.message.member.displayName}'s tracked items:`);
 		trackedItems.forEach(item => {
 			trackEmbed.addField(item.statistic, item.value);
 		});
@@ -57,7 +57,7 @@ const stopTracking = async (context) => {
 	await context.nosql.get('tracking')
 		.remove({'userID': context.message.author.id, 'statistic': trackString})
 		.write();
-	await context.message.channel.send(`No longer tracking \`${trackString}\` for you, ${context.message.author.username}.`);
+	await context.message.channel.send(`No longer tracking \`${trackString}\` for you, ${context.message.member.displayName}.`);
 }
 
 const leaderboard = async (context) => {
