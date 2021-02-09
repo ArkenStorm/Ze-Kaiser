@@ -1,8 +1,16 @@
+const {getConfig} = require('../utils');
+
 const tag = async (context) => {
     let receivedMessage = context.message;
     let args = context.args;
     let tagName = "";
     let imageURL = "";
+    const config = getConfig(context.message.guild.id, context.nosql);
+
+    if (!config.administrators.includes(receivedMessage.author.id)) {
+		return;
+	}
+
     if (args.length === 1 && receivedMessage.attachments.size === 1) {
         receivedMessage.attachments.forEach(attachment => {
             // do something with the attachment
@@ -27,6 +35,12 @@ const tag = async (context) => {
 }
 
 const untag = async(context) => {
+    const config = getConfig(context.message.guild.id, context.nosql);
+
+    if (!config.administrators.includes(receivedMessage.author.id)) {
+		return;
+	}
+
     let receivedMessage = context.message;
     let args = context.args;
     if (args.length !== 1) {

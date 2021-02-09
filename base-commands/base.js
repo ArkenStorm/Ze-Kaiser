@@ -1,7 +1,7 @@
 const { exec } = require('child_process');
 const sqlite = require("../database/sqlite");
-const nosql = require("../database/nosql")
-const {getConfig} = require('../utils')
+const nosql = require("../database/nosql");
+const {getConfig} = require('../utils');
 
 const complete = (context) => {
 	let args = context.args;
@@ -260,7 +260,7 @@ const roles = (context) => {
 }
 
 const gitPull = (context) => {
-	const config = getConfig(context.message.guild.id, context.nosql)
+	const config = getConfig(context.message.guild.id, context.nosql);
 
 	let receivedMessage = context.message;
 	if (!config.administrators.includes(receivedMessage.author.id)) {
