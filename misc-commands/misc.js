@@ -58,9 +58,11 @@ const autoReact = (context) => {
 
 const smite = (context) => {
 	let receivedMessage = context.message;
-	const config = getConfig(context.message.guild.id, context.nosql)
+	const config = getConfig(context.message.guild.id, context.nosql);
 	if (!receivedMessage.mentions.users.first()) {
-		meme(receivedMessage, 'illegal');
+		context.primaryCommand = 'illegal';
+		context.args = [];
+		meme(context);
 		return;
 	}
 
