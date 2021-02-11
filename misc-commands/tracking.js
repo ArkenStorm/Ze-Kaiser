@@ -16,7 +16,7 @@ const track = async (context) => {
 }
 
 const trackUpdate = async (context) => {
-	let updateNum = parseInt(context.args.pop());
+	let updateNum = parseFloat(context.args.pop());
 	let trackString = context.args.join(' ').toLowerCase();
 	if (isNaN(updateNum)) {
 		return context.message.channel.send("Invalid update value.");
