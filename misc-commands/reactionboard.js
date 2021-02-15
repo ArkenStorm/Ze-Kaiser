@@ -29,15 +29,33 @@ function generateEmbedded({ reaction, config }) {
 		}
 	}
 
+	const hasOverrideConfig =
+		Boolean(config.overrides[reaction.emoji.id]) ||
+		Boolean(config.overrides[reaction.emoji.name]);
+
+	const emojiConfig =
+		config.overrides[reaction.emoji.id] ??
+		config.overrides[reaction.emoji.name] ??
+		config;
+	const destinationChannelId = emojiConfig.channelId;
 	const allReactions = message.reactions.cache;
 	const countDisplayString = allReactions
 		.array()
+		// only include the reactions that are posted to this channel
+		.filter((r) => {
+			const localConfig =
+				config.overrides[r.emoji.id] ??
+				config.overrides[r.emoji.name] ??
+				config;
+			return localConfig.channelId === destinationChannelId;
+		})
 		// filter out those below the minimum
 		.filter((r) => {
-			const minCount =
-				config.reactionOverrides[r.emoji.id] ??
-				config.reactionOverrides[r.emoji.name] ??
-				config.defaultReactionMinCount;
+			const localConfig =
+				config.overrides[r.emoji.id] ??
+				config.overrides[r.emoji.name] ??
+				config;
+			const minCount = localConfig.minCount;
 			return r.count >= minCount;
 		})
 		// sort by most reactions
@@ -59,7 +77,7 @@ function generateEmbedded({ reaction, config }) {
 	}
 
 	return new Discord.MessageEmbed()
-		.setColor(config.reactionEmbedColor)
+		.setColor(emojiConfig.embedColor)
 		.setDescription(message.cleanContent)
 		.setAuthor(authorDisplayString, message.author.displayAvatarURL)
 		.setTimestamp(new Date())
@@ -75,29 +93,33 @@ function generateEmbedded({ reaction, config }) {
 }
 
 async function sendReactionboardMessage({ reaction, user, nosqlDB, subtract }) {
-	console.log(`Do we have a reaction? ${Boolean(reaction)}`);
 	const message = reaction.message;
 
 	if (message.author.id === user.id || message.author.bot) {
 		return;
 	}
 
-	const config = nosqlDB
+	const defaultReactionsConfig = nosqlDB
 		.get('config')
 		.find({ serverID: message.guild.id })
-		.value().config;
+		.value().config.reactions;
 
-	if (!config.reactionBoardChannelId) {
+	const configForCurrentReaction =
+		defaultReactionsConfig.overrides[reaction.emoji.id] ??
+		defaultReactionsConfig.overrides[reaction.emoji.name] ??
+		defaultReactionsConfig;
+
+	const channelId =
+		configForCurrentReaction.channelId ?? defaultReactionsConfig.channelId;
+	if (!channelId) {
 		console.error(
-			`reactionBoardChannelId not defined for server ID ${message.guild.id}`
+			`reactions.channelId not defined for server ID ${message.guild.id}`
 		);
 		return;
 	}
-	const reactionboardChannel = message.guild.channels.resolve(
-		config.reactionBoardChannelId
-	);
+	const reactionboardChannel = message.guild.channels.resolve(channelId);
 
-	const embed = generateEmbedded({ reaction, config });
+	const embed = generateEmbedded({ reaction, config: defaultReactionsConfig });
 
 	try {
 		const oldReactionMessages = await reactionboardChannel.messages.fetch({

@@ -22,11 +22,17 @@ const init = (context) => {
                         "maxVideoSize": 10000000,
                         "videoDownloadTimeout": 5000,
 
-                        "defaultReactionMinCount": 10,
-                        "reactionBoardChannelId": "",
-                        "reactionEmbedColor": "15844367",
-                        "reactionOverrides": {
-                            "⭐": 8
+                        "reactions": {
+                            "minCount": 10,
+                            "channelId": "",
+                            "embedColor": 15844367,
+                            "overrides": {
+                                "⭐": {
+                                    "minCount": 10,
+                                    "channelId": "",
+                                    "embedColor": ""
+                                }
+                            }
                         }
                     }
                 })
