@@ -12,18 +12,28 @@ const init = (context) => {
             console.log("Config not found, generating a default one...");
             context.nosql.get('config')
                 .push({
-                    serverID: guildId, config: {
+                    serverID: guildId, 
+                    config: {
                         "administrators": [...contributors, guild.ownerID],
-
-                        "starEmoji": "⭐",
-                        "starEmbedColor": 15844367,
-                        "starMinCount": 5,
 
                         "retryCount": 3,
                         "hangmanTimeout": 600000,
 
                         "maxVideoSize": 10000000,
-                        "videoDownloadTimeout": 5000
+                        "videoDownloadTimeout": 5000,
+
+                        "reactions": {
+                            "minCount": 10,
+                            "channelID": "",
+                            "embedColor": 15844367,
+                            "overrides": {
+                                "⭐": {
+                                    "minCount": 10,
+                                    "channelID": "",
+                                    "embedColor": ""
+                                }
+                            }
+                        }
                     }
                 })
                 .write()
