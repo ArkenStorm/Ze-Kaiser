@@ -37,7 +37,7 @@ function generateEmbedded({ reaction, config }) {
 		config.overrides[reaction.emoji.id] ??
 		config.overrides[reaction.emoji.name] ??
 		config;
-	const destinationChannelId = emojiConfig.channelId;
+	const destinationchannelID = emojiConfig.channelID;
 	const allReactions = message.reactions.cache;
 	const countDisplayString = allReactions
 		.array()
@@ -47,7 +47,7 @@ function generateEmbedded({ reaction, config }) {
 				config.overrides[r.emoji.id] ??
 				config.overrides[r.emoji.name] ??
 				config;
-			return localConfig.channelId === destinationChannelId;
+			return localConfig.channelID === destinationchannelID;
 		})
 		// filter out those below the minimum
 		.filter((r) => {
@@ -109,15 +109,15 @@ async function sendReactionboardMessage({ reaction, user, nosqlDB, subtract }) {
 		defaultReactionsConfig.overrides[reaction.emoji.name] ??
 		defaultReactionsConfig;
 
-	const channelId =
-		configForCurrentReaction.channelId ?? defaultReactionsConfig.channelId;
-	if (!channelId) {
+	const channelID =
+		configForCurrentReaction.channelID ?? defaultReactionsConfig.channelID;
+	if (!channelID) {
 		console.error(
-			`reactions.channelId not defined for server ID ${message.guild.id}`
+			`reactions.channelID not defined for server ID ${message.guild.id}`
 		);
 		return;
 	}
-	const reactionboardChannel = message.guild.channels.resolve(channelId);
+	const reactionboardChannel = message.guild.channels.resolve(channelID);
 
 	const embed = generateEmbedded({ reaction, config: defaultReactionsConfig });
 

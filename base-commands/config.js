@@ -24,12 +24,12 @@ const init = (context) => {
 
                         "reactions": {
                             "minCount": 10,
-                            "channelId": "",
+                            "channelID": "",
                             "embedColor": 15844367,
                             "overrides": {
                                 "⭐": {
                                     "minCount": 10,
-                                    "channelId": "",
+                                    "channelID": "",
                                     "embedColor": ""
                                 }
                             }
