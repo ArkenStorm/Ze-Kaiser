@@ -2,10 +2,10 @@ const Discord = require('discord.js');
 const moment = require('moment');
 
 function processAttachment(attachment) {
-	const imageLink = attachment.split('.');
-	const typeOfImage = imageLink[imageLink.length - 1];
-	const image = /(jpg|jpeg|png|gif|webp)/gi.test(typeOfImage);
-	if (!image) {
+	const mediaLink = attachment.split('.');
+	const typeOfMedia = mediaLink[mediaLink.length - 1];
+	const media = /(jpg|jpeg|png|gif|webp|mov|mp4|mp3|webm|ogg|avi|mpg|mpeg|flv|wmv|flac|wav)/gi.test(typeOfMedia);
+	if (!media) {
 		return '';
 	};
 	return attachment;
