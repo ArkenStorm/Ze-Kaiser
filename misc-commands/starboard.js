@@ -24,7 +24,7 @@ function generateEmbed(message, starEmoji, embedColor, minCount) {
 
 	// If the message is empty, we don't allow the user to star the message.
 	if (image === '' && message.cleanContent.length < 1) {
-		throw message.channel.send(`${user}, you cannot star an empty message.`);
+		throw message.channel.send(`You cannot star an empty message.`);
 	}
 
 	let reactionCount = 0;
