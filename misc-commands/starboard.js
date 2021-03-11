@@ -4,7 +4,7 @@ const moment = require('moment');
 function processAttachment(attachment) {
 	const imageLink = attachment.split('.');
 	const typeOfImage = imageLink[imageLink.length - 1];
-	const image = /(jpg|jpeg|png|gif)/gi.test(typeOfImage);
+	const image = /(jpg|jpeg|png|gif|webp)/gi.test(typeOfImage);
 	if (!image) {
 		return '';
 	};
