@@ -36,12 +36,12 @@ const tag = async (context) => {
 
 const untag = async(context) => {
     const config = getConfig(context.message.guild.id, context.nosql);
+    let receivedMessage = context.message;
 
     if (!config.administrators.includes(receivedMessage.author.id)) {
 		return;
 	}
 
-    let receivedMessage = context.message;
     let args = context.args;
     if (args.length !== 1) {
         receivedMessage.channel.send("Y'all missed the name!");
@@ -71,7 +71,7 @@ const showTag = async(context) => {
     receivedMessage.channel.send("", {files: [foundTag.imageURL]}).then(r => {
 
     }).catch(r => {
-        receivedMessage.channel.send("Tag done messed up dawg!");
+        receivedMessage.channel.send("Tag no work");
     })
 }
 
