@@ -129,9 +129,6 @@ const avatar = (context) => {
 			embed: embed
 		});
 	}
-	receivedMessage.delete().catch((err) => {
-		base.sendError(context, err);
-	});
 }
 
 const warning = (context) => {
