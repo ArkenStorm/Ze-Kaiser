@@ -24,7 +24,8 @@ function generateEmbed(message, starEmoji, embedColor, minCount) {
 
 	// If the message is empty, we don't allow the user to star the message.
 	if (image === '' && message.cleanContent.length < 1) {
-		throw message.channel.send(`You cannot star an empty message.`);
+		//throw message.channel.send(`You cannot star an empty message.`);
+		throw "No starring empty messages!";
 	}
 
 	let reactionCount = 0;
@@ -109,20 +110,20 @@ const add = async (context) => {
 	if (message.author.id === user.id) {
 		await reaction.users.remove(user); // Remove their star
 		// add timer
-		if (starOwn < moment()) {
-			starOwn.add(2, 'minutes');
-			return message.channel.send(`${user}, you cannot star your own messages.`);
-		}
+		// if (starOwn < moment()) {
+		// 	starOwn.add(2, 'minutes');
+		// 	return message.channel.send(`${user}, you cannot star your own messages.`);
+		// }
 		return;
 	}
 
 	if (message.author.bot) {
 		await reaction.users.remove(user);
 		// add timer
-		if (starBot < moment()) {
-			starBot.add(2, 'minutes');
-			return message.channel.send(`${user}, you cannot star bot messages.`);
-		}
+		// if (starBot < moment()) {
+		// 	starBot.add(2, 'minutes');
+		// 	return message.channel.send(`${user}, you cannot star bot messages.`);
+		// }
 		return;
 	}
 
