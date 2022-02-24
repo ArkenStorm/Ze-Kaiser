@@ -65,7 +65,10 @@ const leaderboard = async (context) => {
 	const leaderboardItems = await context.nosql.get('tracking')
 		.filter({'statistic': trackString})
 		.value();
-	await Promise.all(leaderboardItems.map(async item => await context.message.guild.members.fetch(item.userID).then(u => item.username = u.user.username)))
+	await Promise.all(leaderboardItems.map(async item => await context.message.guild.members.fetch(item.userID)
+																							.then(u => item.username = u.user.username)
+																							.catch(console.log('User not found in the current guild.'))
+		))
 		.then(items => items.filter(item => item.user !== undefined));
 	
 	if (leaderboardItems.length) {
