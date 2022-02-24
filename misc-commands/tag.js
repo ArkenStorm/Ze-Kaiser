@@ -68,8 +68,10 @@ const showTag = async(context) => {
         .find({"serverID": receivedMessage.guild.id, "tag": context.primaryCommand})
         .value();
 
-    receivedMessage.channel.send("", {files: [foundTag.imageURL]}).then(r => {
-
+    // receivedMessage.channel.send("", {files: [foundTag.imageURL]})
+    receivedMessage.channel.send(foundTag.imageURL)
+    .then(r => {
+        
     }).catch(r => {
         receivedMessage.channel.send("Tag no work");
     })
