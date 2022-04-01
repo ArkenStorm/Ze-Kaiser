@@ -1,7 +1,7 @@
 const base = require('../base-commands/base');
 
 // I promise this is for a good cause!
-const vulgarity = ['damn', 'shit', 'fuck', 'bitch', 'cunt', 'nigger', 'bastard', 'pussy', 'fakenaughtyword'];
+const vulgarity = ['damn', 'shit', 'fuck', 'bitch', 'cunt', 'nigger', 'bastard', 'pussy', 'fakenaughtyword', 'april', 'fool', 'apr', '1st', 'first', 'he🏒🏒', 'ur mom'];
 
 const filter = (context) => {
 	const receivedMessage = context.message;
