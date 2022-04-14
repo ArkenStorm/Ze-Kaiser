@@ -44,7 +44,7 @@ const addRole = async (context) => {
 		return receivedMessage.channel.send(`${receivedMessage.author}, the ${role} role doesn't seem to exist.  Make sure you spelled it right.`);
 	}
 
-	if (role === '@everyone') {
+	if (role === '@everyone' || role.includes('@everyone')) {
 		return receivedMessage.channel.send('Foolish mortal, you cannot add that role!');
 	}
 
