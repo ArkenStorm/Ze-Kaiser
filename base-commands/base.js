@@ -41,7 +41,7 @@ const addRole = async (context) => {
 	const zeRole = receivedMessage.guild.roles.cache.find(zeRole => zeRole.name.toLowerCase() === role.toLowerCase());
 
 	if(!zeRole) {
-		return receivedMessage.channel.send(`${receivedMessage.author}, the ${role} role doesn't seem to exist.  Make sure you spelled it right.`);
+		return receivedMessage.channel.send(`${receivedMessage.author}, that role doesn't seem to exist.  Make sure you spelled it right.`);
 	}
 
 	if (role === '@everyone' || role.includes('@everyone')) {
@@ -123,7 +123,7 @@ const removeRole = async (context) => {
 	const zeRole = receivedMessage.guild.roles.cache.find(zeRole => zeRole.name.toLowerCase() === role.toLowerCase());
 
 	if(!zeRole) {
-		return receivedMessage.channel.send(`${receivedMessage.author}, the ${role} role doesn't seem to exist.  Make sure you spelled it right.`);
+		return receivedMessage.channel.send(`${receivedMessage.author}, that role doesn't seem to exist.  Make sure you spelled it right.`);
 	}
 
 	if (role === '@everyone' || role.includes('@everyone')) {
