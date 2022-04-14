@@ -74,11 +74,11 @@ const addRoles = async (context) => {
 		return;
 	}
 	roles = roles.join(' ');  //For roles with multiple words
-	roles = roles.split(', ');
 	if (roles.includes('@everyone')) {
-		receivedMessage.channel.send('Foolish mortal, you cannot add the @everyone role! No roles were added because of your insolence!');
+		receivedMessage.channel.send('Foolish mortal, you cannot add that role! No roles were added because of your insolence!');
 		return;
 	}
+	roles = roles.split(', ');
 
 	const zeRoles = [];
 	let previousRoles = [];
@@ -126,7 +126,7 @@ const removeRole = async (context) => {
 		return receivedMessage.channel.send(`${receivedMessage.author}, the ${role} role doesn't seem to exist.  Make sure you spelled it right.`);
 	}
 
-	if (role === '@everyone') {
+	if (role === '@everyone' || role.includes('@everyone')) {
 		return receivedMessage.channel.send('Foolish mortal, you cannot remove that role!');
 	}
 
@@ -150,10 +150,10 @@ const removeRoles = async (context) => {
 		return receivedMessage.channel.send('I need some roles to try to remove!');
 	}
 	roles = roles.join(' ');  //For roles with multiple words
-	roles = roles.split(', ');
 	if (roles.includes('@everyone')) {
 		return receivedMessage.channel.send('Foolish mortal, you cannot remove the @everyone role! No roles have been removed because of your insolence!');
 	}
+	roles = roles.split(', ');
 
 	const zeRoles = [];
 	let nonRemovedRoles = [];
