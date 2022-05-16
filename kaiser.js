@@ -1,5 +1,9 @@
 global.Discord = require('discord.js');
-global.client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION']});
+global.client = new Discord.Client({
+	partials: ['MESSAGE', 'CHANNEL', 'REACTION'],
+	disableMentions: 'everyone'
+});
+
 const security = require('./auth.json');
 
 const misc = require('./misc-commands/misc');
