@@ -54,6 +54,10 @@ function generateEmbed(message, starEmoji, embedColor, minCount) {
 }
 
 async function applyStarboardMessage(message, starEmoji, embedColor, minCount, subtract = false) {
+	if (!message.member) {
+		await message.channel.messages.fetch(message.id);
+	}
+
 	const starChannel = message.guild.channels.cache.find(channel => channel.name.toLowerCase().indexOf('starboard') !== -1);
 	if (!starChannel && message.reactions.cache.size === 1 && !subtract) { // only happens when the first emoji is added on a message
 		return message.channel.send(`It appears that you do not have a \`Starboard\` channel.`);
